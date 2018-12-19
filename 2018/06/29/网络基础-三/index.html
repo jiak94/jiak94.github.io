@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解   IP 地址IP地址长度为4bytes, 也就是32bit. 一个IPV4的地址有4个octet组成, 通常来说, 每一位有10进制数字组成. 与MAC地址不同的是, IP地址通常有网络公司进行分配. 举个例子来说, IBM拥有所有以 9 开头的IP地址. 所以, 当数据包需要被传送到 9.0.0.">
+<meta name="keywords" content="Network,Fundemental Knowledge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络基础知识(三) Network层详解">
+<meta property="og:url" content="https://jiakuan.xyz/2018/06/29/网络基础-三/index.html">
+<meta property="og:site_name" content="Memory Allocation">
+<meta property="og:description" content="系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解   IP 地址IP地址长度为4bytes, 也就是32bit. 一个IPV4的地址有4个octet组成, 通常来说, 每一位有10进制数字组成. 与MAC地址不同的是, IP地址通常有网络公司进行分配. 举个例子来说, IBM拥有所有以 9 开头的IP地址. 所以, 当数据包需要被传送到 9.0.0.">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://jiakuan.xyz/2018/06/29/网络基础-三/ip_address_class.png">
+<meta property="og:image" content="https://jiakuan.xyz/2018/06/29/网络基础-三/ip_datagram.png">
+<meta property="og:image" content="https://jiakuan.xyz/2018/06/29/网络基础-三/encapsulation.png">
+<meta property="og:updated_time" content="2018-12-19T05:22:29.899Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络基础知识(三) Network层详解">
+<meta name="twitter:description" content="系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解   IP 地址IP地址长度为4bytes, 也就是32bit. 一个IPV4的地址有4个octet组成, 通常来说, 每一位有10进制数字组成. 与MAC地址不同的是, IP地址通常有网络公司进行分配. 举个例子来说, IBM拥有所有以 9 开头的IP地址. 所以, 当数据包需要被传送到 9.0.0.">
+<meta name="twitter:image" content="https://jiakuan.xyz/2018/06/29/网络基础-三/ip_address_class.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://jiakuan.xyz/2018/06/29/网络基础-三/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>网络基础知识(三) Network层详解 | Memory Allocation</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119582110-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119582110-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Memory Allocation</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+    <a href="/404" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>Commonweal 404</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiakuan.xyz/2018/06/29/网络基础-三/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jiakuan Li">
+      <meta itemprop="description" content="雷霆雨露，俱是天恩">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Memory Allocation">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">网络基础知识(三) Network层详解
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-06-28 15:34:38" itemprop="dateCreated datePublished" datetime="2018-06-28T15:34:38-04:00">2018-06-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-19 00:22:29" itemprop="dateModified" datetime="2018-12-19T00:22:29-05:00">2018-12-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Hard-Core-CS/" itemprop="url" rel="index"><span itemprop="name">Hard Core CS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/06/29/网络基础-三/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/06/29/网络基础-三/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="系列回顾"><a href="#系列回顾" class="headerlink" title="系列回顾"></a>系列回顾</h2><ul>
+<li><a href="/2018/06/27/网络基础-一/" title="网络基础知识(一) TCP/IP五层模型">网络基础知识(一) TCP/IP五层模型</a></li>
+<li><a href="/2018/06/27/网络基础-二/" title="网络基础知识(二) Data Link层详解">网络基础知识(二) Data Link层详解</a>
+</li>
+</ul>
+<h2 id="IP-地址"><a href="#IP-地址" class="headerlink" title="IP 地址"></a>IP 地址</h2><p>IP地址长度为4bytes, 也就是32bit. 一个IPV4的地址有4个octet组成, 通常来说, 每一位有10进制数字组成. 与MAC地址不同的是, IP地址通常有网络公司进行分配. 举个例子来说, IBM拥有所有以 <strong>9</strong> 开头的IP地址. 所以, 当数据包需要被传送到 <code>9.0.0.1</code>的之后, 数据只需要被送到IBM公司其中一个路由就可以了. IBM公司的路由就会接管. </p>
+<p>另外一个很重要的知识点就是, IP地址与硬件无关. 所以, 一台设备连接至不同网络的时候, IP地址会变, 但是MAC地址永远不变. 当一个设备连接到网络时, 通常来说, IP会被自动分配. 这种通过DHCP技术获得的IP, 叫做动态IP, 相应的, 如果如要手动设置的IP, 这种IP叫做静态IP.</p>
+<p>IP 地址本身也被分成两部分: 第一部分叫做 <strong>Network ID</strong>, 第二部分叫做 <strong>Host ID</strong>. </p>
+<a id="more"></a>
+<h3 id="Address-Class-系统"><a href="#Address-Class-系统" class="headerlink" title="Address Class 系统"></a>Address Class 系统</h3><p>Address Class定义了如何将全世界所有的IP进行分类. IP地址的分类只要有3种: Class A; Class B; Class C.</p>
+<p>Class A: 第一个Octet为 Network ID, 剩下的为 Host ID的地址即为A类地址. </p>
+<p>Class B: 头两个Octet为 Network ID, 后两个Octet为 Host ID的地址即为B类地址</p>
+<p>Class C: 头3个Octet为 Network ID, 最后一个Octet为 Host ID的地址即为C类地址. </p>
+<img src="/2018/06/29/网络基础-三/ip_address_class.png" title="IP Addresses Classes">
+<h2 id="IP-Datagram"><a href="#IP-Datagram" class="headerlink" title="IP Datagram"></a>IP Datagram</h2><p>跟 <strong>Ethernet Frame</strong> 一样, IP Datagram 也是有严格的格式限制的.<br><img src="/2018/06/29/网络基础-三/ip_datagram.png" title="IP Datagram"></p>
+<p>IP Datagram 的header里面比Ethernet Frame的header所含的信息多很多.</p>
+<h3 id="Version"><a href="#Version" class="headerlink" title="Version"></a>Version</h3><p>IP Datagram的头4个bit是Version. 这里表明了这个IP Datagram用的什么版本的协议. 目前被使用得最多的是IPV4协议, 但是现在很多的服务器都渐渐开始使用IPV6了. </p>
+<h3 id="Header-Length"><a href="#Header-Length" class="headerlink" title="Header Length"></a>Header Length</h3><p>紧接着 Version, 下一个字段是 <strong>Header Length</strong>. 它表明了这个IP Datagram的header的长度. 这个字段的长度同样也是4个bit. 在IPV4, 大多数情况下, header的长度是20. 事实上, 20是ip header的最小长度.</p>
+<h3 id="Service-Type"><a href="#Service-Type" class="headerlink" title="Service Type"></a>Service Type</h3><p>下一个字段是 <strong>Service Type</strong>. 它的长度为8个bit. 这个字段被QoS技术使用. 关于QoS, 可以点<a href="https://en.wikipedia.org/wiki/Quality_of_service" target="_blank" rel="noopener">这里</a>了解详情. QoS技术存在的意义可以让路由器分辨出哪一个IP Datagram更重要(更高优先级). </p>
+<h3 id="Total-Length"><a href="#Total-Length" class="headerlink" title="Total Length"></a>Total Length</h3><p>Total Length字段的长度为16个bit. 这个字段表明了IP Datagram的 <strong>总长度</strong>. 需要注意的和 <strong>Header Length</strong>区分.</p>
+<h3 id="Identification"><a href="#Identification" class="headerlink" title="Identification"></a>Identification</h3><p>这个字段的长度是16个bit. 它被用来讲IP Datagram的信息组合在一起. 因为 <strong>Total Length</strong> 是16个bit的长度, 所以一个IP Datagram的长度就是16个bit所能表示的最大值, 也就是65,535. 如果说需要传输的数据的大小超过65,535, 那么就需要讲数据分段. 当接受的设备收到若干个IP Datagram之后, 如果他们的 Identification字段的值一样, 那就表明, 这几个IP Datagram应该被组合在一起. </p>
+<h3 id="Flag-和-Fragment-Offset"><a href="#Flag-和-Fragment-Offset" class="headerlink" title="Flag 和 Fragment Offset"></a>Flag 和 Fragment Offset</h3><p>之所以把这两个字段放在一起讲, 是因为 <strong>Flag</strong> 字段表明这个IP Datagram是否是其中一个片段. 如果是其中一个片段, 那么 Fragment Offset是帮助接受设备把这些IP Datagram重新组合.</p>
+<p>说到把IP Datagram分段, 是因为每个LAN的最大长度IP Datagram是不一致的. 如果说要把一个IP Datagram从一个LAN传输到另一个LAN, 但是目标LAN的最大IP Datagram比当前这个IP Datagram的大小要小, 那么就必须把这个IP Datagram分段进行传输.</p>
+<h3 id="TTL-Time-To-Live"><a href="#TTL-Time-To-Live" class="headerlink" title="TTL (Time To Live)"></a>TTL (Time To Live)</h3><p>这个字段是个8-bit长度的字段. 它用于表示在datagram被丢弃之前能在路由之间跳多少次. 当datagram到达一个新的路由, 路由会把TTL字段减1; 如果路由遇到TTL为0的Datagram, 那么会直接丢弃. 这样做的意义是, 防止路由的死循环. 如果路由错误的发送了一个datagram到一个错误的地方导致死循环, 这个字段可以帮助路由丢弃数据包而不是一直在网络中传送这个数据包. </p>
+<h3 id="Protocal"><a href="#Protocal" class="headerlink" title="Protocal"></a>Protocal</h3><p>这个字段长度也是8-bit. 用于表示transpor层中使用的协议. 最常见的就是 TCP 或是 UDP.</p>
+<h3 id="Header-Checksum"><a href="#Header-Checksum" class="headerlink" title="Header Checksum"></a>Header Checksum</h3><p>这个字段是datagram header的checksum值. 接收端会校验这个值, 如果值不一致, 表明数据不完整, 那么这个datagram会被丢弃. </p>
+<h3 id="发送IP-和-目标IP"><a href="#发送IP-和-目标IP" class="headerlink" title="发送IP 和 目标IP"></a>发送IP 和 目标IP</h3><p>前面提到, IP地址是的长度是32bit, 所以这两个字段也是32bit长度. </p>
+<h3 id="IP-Options"><a href="#IP-Options" class="headerlink" title="IP Options"></a>IP Options</h3><p>这个字段不是必须的字段. 主要是测试IP Datagram的时候用于设置一些特殊字符.</p>
+<h3 id="Padding"><a href="#Padding" class="headerlink" title="Padding"></a>Padding</h3><p>因为IP Option不是一个特殊字段, 它的长度也不一定. 所以Padding字段就是一堆0, 用于补全IP Option字段的长度, 使长度等于32bit.</p>
+<h2 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h2><img src="/2018/06/29/网络基础-三/encapsulation.png" title="Encapsulation">
+<p>在讲 Ethernet Frame的时候讲到, 提到有一个字段叫做 <strong>Payload</strong>, 这个payload字段的内容, 其实就是IP Datagram. IP Datagram也有一个 <strong>Payload</strong> 字段, 内容就是 Transport层的Payload. 这个说明了, 模型的每一层都封装这上一层的数据包.</p>
+<h2 id="ARP"><a href="#ARP" class="headerlink" title="ARP"></a>ARP</h2><p>ARP 是 <strong>Address Resolution Protocal</strong> 的缩写, 它用于发现网络中某个IP地址的节点的硬件地址, 也就是MAC地址. 一般来说ARP通过查表来发现该IP地址的MAC地址. 每个LAN都维护一个ARP表, key是IP 地址; value是拥有该IP地址的硬件地址. 如果ARP表没有这个IP地址怎么办? 那么就会发送一个 <strong>ARP 广播</strong>给LAN的每一个节点. 举个例子, 如果需要知道<code>10.20.30.40</code>的MAC地址, 而ARP表没有, 那么就会发送一个ARP广播, 然后<code>10.20.30.40</code>这个节点收听到广播后将回复自己的硬件地址. 同时, 这个MAC地址也将会被存在ARP表, 以便下次使用. 还有一点需要注意的是, ARP表并不是不变的. 每隔一段时间, ARP表会被清空, 以应对可能的网络变化.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Network/" rel="tag"># Network</a>
+          
+            <a href="/tags/Fundemental-Knowledge/" rel="tag"># Fundemental Knowledge</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/27/网络基础-二/" rel="next" title="网络基础知识(二) Data Link层详解">
+                <i class="fa fa-chevron-left"></i> 网络基础知识(二) Data Link层详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/01/网络基础-四/" rel="prev" title="网络基础知识(四) 子网与路由">
+                网络基础知识(四) 子网与路由 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b0096a3c2b16438" async="async"></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Jiakuan Li">
+            
+              <p class="site-author-name" itemprop="name">Jiakuan Li</p>
+              <p class="site-description motion-element" itemprop="description">雷霆雨露，俱是天恩</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/jiak94" target="_blank" title="GitHub" rel="external nofollow"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/mem_alloc" target="_blank" title="Twitter" rel="external nofollow"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系列回顾"><span class="nav-number">1.</span> <span class="nav-text">系列回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-地址"><span class="nav-number">2.</span> <span class="nav-text">IP 地址</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Address-Class-系统"><span class="nav-number">2.1.</span> <span class="nav-text">Address Class 系统</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IP-Datagram"><span class="nav-number">3.</span> <span class="nav-text">IP Datagram</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Version"><span class="nav-number">3.1.</span> <span class="nav-text">Version</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Header-Length"><span class="nav-number">3.2.</span> <span class="nav-text">Header Length</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Service-Type"><span class="nav-number">3.3.</span> <span class="nav-text">Service Type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Total-Length"><span class="nav-number">3.4.</span> <span class="nav-text">Total Length</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Identification"><span class="nav-number">3.5.</span> <span class="nav-text">Identification</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Flag-和-Fragment-Offset"><span class="nav-number">3.6.</span> <span class="nav-text">Flag 和 Fragment Offset</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TTL-Time-To-Live"><span class="nav-number">3.7.</span> <span class="nav-text">TTL (Time To Live)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Protocal"><span class="nav-number">3.8.</span> <span class="nav-text">Protocal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Header-Checksum"><span class="nav-number">3.9.</span> <span class="nav-text">Header Checksum</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发送IP-和-目标IP"><span class="nav-number">3.10.</span> <span class="nav-text">发送IP 和 目标IP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#IP-Options"><span class="nav-number">3.11.</span> <span class="nav-text">IP Options</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Padding"><span class="nav-number">3.12.</span> <span class="nav-text">Padding</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#封装"><span class="nav-number">4.</span> <span class="nav-text">封装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ARP"><span class="nav-number">5.</span> <span class="nav-text">ARP</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiakuan Li</span>
+
+  
+
+  
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://memory-allocation.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://jiakuan.xyz/2018/06/29/网络基础-三/';
+        this.page.identifier = '2018/06/29/网络基础-三/';
+        this.page.title = '网络基础知识(三) Network层详解';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://memory-allocation.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+</body>
+</html>

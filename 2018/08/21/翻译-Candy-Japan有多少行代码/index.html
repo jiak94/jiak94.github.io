@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="原文链接How many lines of code is Candy Japan? 湾区日报短评 这是每月交$29，寄一盒日本零食给你的电商。Python + App Engine，集成 PayPal 与 Recurly 收钱，还有一些自动化的代码用来优化打印送货地址、退货的流程等。总共 8000 多行 Python 代码。他是 2011 年开始做的，本文写于 2016 年。如果是 2018 年">
+<meta name="keywords" content="Translation">
+<meta property="og:type" content="article">
+<meta property="og:title" content="[翻译] Candy Japan有多少行代码">
+<meta property="og:url" content="https://jiakuan.xyz/2018/08/21/翻译-Candy-Japan有多少行代码/index.html">
+<meta property="og:site_name" content="Memory Allocation">
+<meta property="og:description" content="原文链接How many lines of code is Candy Japan? 湾区日报短评 这是每月交$29，寄一盒日本零食给你的电商。Python + App Engine，集成 PayPal 与 Recurly 收钱，还有一些自动化的代码用来优化打印送货地址、退货的流程等。总共 8000 多行 Python 代码。他是 2011 年开始做的，本文写于 2016 年。如果是 2018 年">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2018-12-19T05:22:29.976Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="[翻译] Candy Japan有多少行代码">
+<meta name="twitter:description" content="原文链接How many lines of code is Candy Japan? 湾区日报短评 这是每月交$29，寄一盒日本零食给你的电商。Python + App Engine，集成 PayPal 与 Recurly 收钱，还有一些自动化的代码用来优化打印送货地址、退货的流程等。总共 8000 多行 Python 代码。他是 2011 年开始做的，本文写于 2016 年。如果是 2018 年">
+
+
+
+
+
+
+  <link rel="canonical" href="https://jiakuan.xyz/2018/08/21/翻译-Candy-Japan有多少行代码/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>[翻译] Candy Japan有多少行代码 | Memory Allocation</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119582110-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119582110-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Memory Allocation</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+    <a href="/404" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>Commonweal 404</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiakuan.xyz/2018/08/21/翻译-Candy-Japan有多少行代码/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jiakuan Li">
+      <meta itemprop="description" content="雷霆雨露，俱是天恩">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Memory Allocation">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">[翻译] Candy Japan有多少行代码
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-08-21 00:14:47" itemprop="dateCreated datePublished" datetime="2018-08-21T00:14:47-04:00">2018-08-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-19 00:22:29" itemprop="dateModified" datetime="2018-12-19T00:22:29-05:00">2018-12-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Technical-Artical/" itemprop="url" rel="index"><span itemprop="name">Technical Artical</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/08/21/翻译-Candy-Japan有多少行代码/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/21/翻译-Candy-Japan有多少行代码/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="原文链接"><a href="#原文链接" class="headerlink" title="原文链接"></a>原文链接</h2><p><a href="https://www.candyjapan.com/behind-the-scenes/how-many-lines-of-code-is-candy-japan?utm_source=wanqu.co&amp;utm_campaign=Wanqu+Daily&amp;utm_medium=website" title="Candy Japan 有多少行代码?" target="_blank" rel="noopener">How many lines of code is Candy Japan?</a></p>
+<h2 id="湾区日报短评"><a href="#湾区日报短评" class="headerlink" title="湾区日报短评"></a>湾区日报短评</h2><blockquote>
+<p>这是每月交$29，寄一盒日本零食给你的电商。Python + App Engine，集成 PayPal 与 Recurly 收钱，还有一些自动化的代码用来优化打印送货地址、退货的流程等。总共 8000 多行 Python 代码。<br>他是 2011 年开始做的，本文写于 2016 年。如果是 2018 年从头开始做的话，可以不用写这么多代码，有很多现成的 API 几行代码就能搞定了。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="Candy-Japan-有多少行代码"><a href="#Candy-Japan-有多少行代码" class="headerlink" title="Candy Japan 有多少行代码?"></a>Candy Japan 有多少行代码?</h2><p>在日本, 有很多非常特别的糖果并没有对日本以外的国家发售, 所以我创立了一个网站叫”Candy Japan”. 我们美两周就会向用户发送一些仅在日本出售的糖果.</p>
+<p>在我创立这个网站之初, 并没有”盒子订阅”这种服务, 所以我需要自己来写所有代码. 这篇文章讲的就是我究竟谢了多少东西..</p>
+<p>如果你不愿意听我讲, 这里有一个14分钟的<a href="https://www.youtube.com/watch?v=bq9f_de9glk" target="_blank" rel="noopener">视频</a></p>
+<h3 id="技术栈"><a href="#技术栈" class="headerlink" title="技术栈"></a>技术栈</h3><p>回到2011年时候, 市面上没有订阅平台, 甚至”订阅”这个词也没什么人在用. 为了写这个网站, 我把网站建立在Google App Engine 上, 语言是python. 这个网站还集成了Paypal和Recurly (一个信用卡支付的中间件). 除了 MixPanel和 Google Analytics之外没有别的依赖包.</p>
+<h3 id="界面"><a href="#界面" class="headerlink" title="界面"></a>界面</h3><p>网站的<a href="https://www.candyjapan.com/" target="_blank" rel="noopener">登陆页</a>有<strong>104</strong>行代码. 你们觉得Candy Japan有多少行python代码? 找个地方写下你的答案吧, 等你看完文章后核对一下看你离答案有多远. HTML 和 CSS代码不计算在其中, 仅仅是python代码</p>
+<p>除了登录页, 用户还能看见一些别的页面, 比如说 FAQ, 之前发送过给用户的糖果列表以及他们的图片. 这些图片存储在 App Engine BlobStore. 加起来一共<strong>377</strong>行代码.</p>
+<h3 id="界面之下"><a href="#界面之下" class="headerlink" title="界面之下"></a>界面之下</h3><p>如果说登录页和其他用户可见的页面是冰山一角的话, 那么水面以下有一些什么呢?</p>
+<h4 id="Paypal集成"><a href="#Paypal集成" class="headerlink" title="Paypal集成"></a>Paypal集成</h4><p>网站有一些代码用于和paypal通信. 在我实现这个的时候, 我当时使用的API叫做 “Paypal Payments Standard NVP API”. NVP代表着”Name-Value Pair”, 是一种比JSON格式更为痛苦的通信方式. 这个集成一共有<strong>712</strong>行代码.</p>
+<h4 id="Recurly集成"><a href="#Recurly集成" class="headerlink" title="Recurly集成"></a>Recurly集成</h4><p>Recurly是一个中间件, 负责用户和信用卡付款付关口的. 由于它的设计比较容易集成, 所以这个集成只有<strong>222</strong>行代码.</p>
+<h4 id="诈骗检测"><a href="#诈骗检测" class="headerlink" title="诈骗检测"></a>诈骗检测</h4><p>互联网上总会有坏人. 有时候一些信用卡泄漏或者有商家的数据库被拖库都会造成一批可用的信用卡信息泄漏. 坏人会使用这个偷来的信用卡信息在网上消费.</p>
+<p>礼品卡是具有很强吸引力的诈骗目标. 因为不仅仅犯罪分子会检查卡号是否可用, 而且还可以获得可能具有一定转卖价值的礼品卡. 诈骗犯们可以在ebay上卖他们的卡, 然后让我退款. 我所面临的情况非常糟糕, 因为ebay会认为他们正在购买一张合法的卡.</p>
+<p>很长一段时间内, 网站上是没有礼品卡的, 但是当年底节假日来临时, 我觉得重新使用礼品卡, 但可能仅仅是Paypal可用, 因为paypal有很好的反诈骗手段.</p>
+<p>为了能分辨好人和坏人, 我写了<strong>587</strong>行诈骗检测代码.</p>
+<h4 id="购物车"><a href="#购物车" class="headerlink" title="购物车"></a>购物车</h4><p>体会过诈骗的为题之后, 我不得不停止使用recurly的购物车插件, 因为这个插件的发诈骗手段不够.</p>
+<p>为此, 我开发了自己的购物车流程来获取所有可能产生的信号, 这样也可以让我更好的实现反诈骗. 这里有<strong>510</strong>行代码.</p>
+<h4 id="发货"><a href="#发货" class="headerlink" title="发货"></a>发货</h4><p>在接受订单之后, 我需要把包裹准确的发送到客户的地址. 如果只有几个订阅, 那么手工操作会很容易. 当你有几百个订阅用户之后, 你会需要一套系统来帮你实现这个事情.</p>
+<p>我写了一些代码来过一遍所有的账号, 尝试去找到所有的收获地址. 但是, 这个过程也不是永远顺利的, 因为存在有很多corner case. 例如, 账号可以被暂停, 所以我需要手工去调整. 还有一些情况是, 我会给一些并没有付款成功的用户发货, 因为我相信这部分潜在用户会成为正式用户的.</p>
+<p>当你每月制作超过1000张运单时, 你的结果是你每月会花费不少的金额在运单上. 我写了一些代码尝试将运单压缩成小的pdf格式, 然后在原来的运单纸上同时打印多张. 与原来的情况相比, 这样子做能够更快, 而且费用会降低.</p>
+<p>跟发货相关的代码有<strong>1165</strong>行.</p>
+<h4 id="退货"><a href="#退货" class="headerlink" title="退货"></a>退货</h4><p>有时候, 邮局会给我们退货. 地址可能是错的, 或者用户搬家了, 没有人接受包裹, 又或者是没有人在家接受包裹. </p>
+<p>人工寻找出这些退货的盒子属于哪个账号, 并发送邮件通知用户和调账账号是需要额外的经历的. 为了减轻工作上的负担, 我在盒子上会打印一个条形码, 当邮局退货时, 我只需要扫描一下条形码就可以了. 以往需要10到15分钟来处理退货包裹的流程现在只需要10秒就可以完成.</p>
+<p>这个功能一共有<strong>505</strong>行代码.</p>
+<h4 id="后台工具"><a href="#后台工具" class="headerlink" title="后台工具"></a>后台工具</h4><p>后台管理工具其实有很多种. 比如说, 可以直接看数据库的数据,这可比看账户信息的工具要方便很多. 你还可能会需要根据名字, 地址, 或者订阅号来搜索账户.</p>
+<p>另外, 实现这个功能也是为了生成一些报告, 比如说税务报表之类的. 这个后台管理工具有<strong>634</strong>行代码.</p>
+<h4 id="市场营销相关"><a href="#市场营销相关" class="headerlink" title="市场营销相关"></a>市场营销相关</h4><p>当你上线了一个网站时, 通常来说, 人们并不会发现你这个网站的存在. 在创立之初, 拉拢客户其实不是特别困难. 只需要在类似于”Product Hunt”这类型的网站上发一些帖子. 有一些博客主(网红)也会关注你的网站, 因为这是一个新网站.</p>
+<p>但是, 当你的网站存在了一定时间之后, 你的网站已经不是”新”网站了, 热度下来之后不会再有新用户会听说你的网站了, 除非你持续不断地发广告. 这其实非常耗费精力和钱财, 你最后还是会选择去写一些代码来测量你的市场和广告效果.</p>
+<p>首先, 因为我需要知道我的目标客户是什么样子的, 我会在订阅时加入一个调查问卷.</p>
+<p>你还需要知道你有多少预算可以花在广告上, 因此你会去计算保留率之类的一些数据. 有一些方法可以让更多的访客变成用户, 比如说A/B测试或者给放弃购物车的访客发送提醒等等. </p>
+<p>另外一种营销方式是给博客主(网红)们提供免费的小样, 但是这个需要手工修改数据库, 有一点点麻烦, 因为每周我都会收到好多好多问我要小样的请求. 为了减少在这上面花的时间, 我为博客主(网红)们准备了特别的注册通道. 在这个过程中去掉了付款这一步, 取而代之的是我会审查每一个请求, 同意或者拒绝.</p>
+<p>所有市场营销相关的功能一共需要<strong>1219</strong>行代码.</p>
+<h4 id="邮件功能"><a href="#邮件功能" class="headerlink" title="邮件功能"></a>邮件功能</h4><p>当一个新用户注册后, 他会收到一个欢迎邮件. 当博客主(网红)们的申请被同意后, 你会需要发送邮件通知他们. 还有你会需要发送一些提醒给用户, 让他们收到盒子之后去评价. </p>
+<p>有时候亲自联系用户是一个比较好玩的事情, 但是整套系统也可以是全自动的.</p>
+<p>这个功能花费了<strong>253</strong>行代码.</p>
+<h3 id="代码总量"><a href="#代码总量" class="headerlink" title="代码总量"></a>代码总量</h3><p>一共有<strong>8341</strong>行代码.</p>
+<p>你猜得怎么样? 如果你的答案是 5000 - 15000之间, 我会说这个猜测是个优秀的猜测. 不错的猜测应该是3000 - 30000这个范围. 还行的猜错是 1000 - 50000 之间. 如果你猜1000行一下, 我会觉得受宠若惊. 如果你猜50000以上, 这又不是汇编程序.</p>
+<h3 id="学习到什么"><a href="#学习到什么" class="headerlink" title="学习到什么"></a>学习到什么</h3><p>我用了几个月来开发这个网站, 然后接下来的5年不断地往网站上添加功能. </p>
+<p>如果你现在想创立一个订阅盒子服务, 我会推荐你使用一些现成的平台, 例如<a href="http://www.subbly.co/" target="_blank" rel="noopener">Subbly</a> 或者 <a href="http://cratejoy.com/" target="_blank" rel="noopener">CrateJoy</a>.</p>
+<p>将我的网站拆分为CMS（可能是WordPress）并将订阅部分分开是有意义的。可以通过CMS管理网站上可见的所有内容（常见问题解答，糖果图片，登录页面，博客）。这会减少一些尝试成为CMS的代码，但在增加不必要的复杂性的同时做得很差.</p>
+<p>应用引擎NoSQL数据存储不适合运行报告.您最终编写的Python代码可以在SQL中更好地表达. 否则我很高兴选择App Engine.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Translation/" rel="tag"># Translation</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/11/网络基础-七/" rel="next" title="网络基础知识(七) DNS 和 Name Resolution">
+                <i class="fa fa-chevron-left"></i> 网络基础知识(七) DNS 和 Name Resolution
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/23/翻译-后敏捷开发时代/" rel="prev" title="[翻译] 后敏捷开发时代">
+                [翻译] 后敏捷开发时代 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b0096a3c2b16438" async="async"></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Jiakuan Li">
+            
+              <p class="site-author-name" itemprop="name">Jiakuan Li</p>
+              <p class="site-description motion-element" itemprop="description">雷霆雨露，俱是天恩</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/jiak94" target="_blank" title="GitHub" rel="external nofollow"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/mem_alloc" target="_blank" title="Twitter" rel="external nofollow"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原文链接"><span class="nav-number">1.</span> <span class="nav-text">原文链接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#湾区日报短评"><span class="nav-number">2.</span> <span class="nav-text">湾区日报短评</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Candy-Japan-有多少行代码"><span class="nav-number">3.</span> <span class="nav-text">Candy Japan 有多少行代码?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#技术栈"><span class="nav-number">3.1.</span> <span class="nav-text">技术栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#界面"><span class="nav-number">3.2.</span> <span class="nav-text">界面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#界面之下"><span class="nav-number">3.3.</span> <span class="nav-text">界面之下</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Paypal集成"><span class="nav-number">3.3.1.</span> <span class="nav-text">Paypal集成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Recurly集成"><span class="nav-number">3.3.2.</span> <span class="nav-text">Recurly集成</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#诈骗检测"><span class="nav-number">3.3.3.</span> <span class="nav-text">诈骗检测</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#购物车"><span class="nav-number">3.3.4.</span> <span class="nav-text">购物车</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#发货"><span class="nav-number">3.3.5.</span> <span class="nav-text">发货</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#退货"><span class="nav-number">3.3.6.</span> <span class="nav-text">退货</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#后台工具"><span class="nav-number">3.3.7.</span> <span class="nav-text">后台工具</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#市场营销相关"><span class="nav-number">3.3.8.</span> <span class="nav-text">市场营销相关</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#邮件功能"><span class="nav-number">3.3.9.</span> <span class="nav-text">邮件功能</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码总量"><span class="nav-number">3.4.</span> <span class="nav-text">代码总量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#学习到什么"><span class="nav-number">3.5.</span> <span class="nav-text">学习到什么</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiakuan Li</span>
+
+  
+
+  
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://memory-allocation.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://jiakuan.xyz/2018/08/21/翻译-Candy-Japan有多少行代码/';
+        this.page.identifier = '2018/08/21/翻译-Candy-Japan有多少行代码/';
+        this.page.title = '[翻译] Candy Japan有多少行代码';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://memory-allocation.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+</body>
+</html>

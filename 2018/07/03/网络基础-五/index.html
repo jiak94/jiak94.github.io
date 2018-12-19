@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 网络基础知识(四) 子网与路由   Transport Layer 传输层传输层在整个网络模型中非常重要, 它对于很多网络可靠性的功能负责, 包括但不限于Multiplexing traffic和demultiplexing traffic.简单来说, mul">
+<meta name="keywords" content="Network,Fundemental Knowledge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="网络基础知识(五) Transport层详解">
+<meta property="og:url" content="https://jiakuan.xyz/2018/07/03/网络基础-五/index.html">
+<meta property="og:site_name" content="Memory Allocation">
+<meta property="og:description" content="系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 网络基础知识(四) 子网与路由   Transport Layer 传输层传输层在整个网络模型中非常重要, 它对于很多网络可靠性的功能负责, 包括但不限于Multiplexing traffic和demultiplexing traffic.简单来说, mul">
+<meta property="og:locale" content="en">
+<meta property="og:image" content="https://jiakuan.xyz/2018/07/03/网络基础-五/multiplexing_demultiplexing.png">
+<meta property="og:image" content="https://jiakuan.xyz/2018/07/03/网络基础-五/TCP_header.png">
+<meta property="og:image" content="https://jiakuan.xyz/2018/07/03/网络基础-五/TCP_handshake.png">
+<meta property="og:image" content="https://jiakuan.xyz/2018/07/03/网络基础-五/TCP_wavehand.png">
+<meta property="og:updated_time" content="2018-12-19T05:22:29.923Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="网络基础知识(五) Transport层详解">
+<meta name="twitter:description" content="系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 网络基础知识(四) 子网与路由   Transport Layer 传输层传输层在整个网络模型中非常重要, 它对于很多网络可靠性的功能负责, 包括但不限于Multiplexing traffic和demultiplexing traffic.简单来说, mul">
+<meta name="twitter:image" content="https://jiakuan.xyz/2018/07/03/网络基础-五/multiplexing_demultiplexing.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://jiakuan.xyz/2018/07/03/网络基础-五/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>网络基础知识(五) Transport层详解 | Memory Allocation</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119582110-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119582110-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Memory Allocation</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+    <a href="/404" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>Commonweal 404</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiakuan.xyz/2018/07/03/网络基础-五/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jiakuan Li">
+      <meta itemprop="description" content="雷霆雨露，俱是天恩">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Memory Allocation">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">网络基础知识(五) Transport层详解
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-07-02 13:13:17" itemprop="dateCreated datePublished" datetime="2018-07-02T13:13:17-04:00">2018-07-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2018-12-19 00:22:29" itemprop="dateModified" datetime="2018-12-19T00:22:29-05:00">2018-12-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Hard-Core-CS/" itemprop="url" rel="index"><span itemprop="name">Hard Core CS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/07/03/网络基础-五/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/07/03/网络基础-五/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="系列回顾"><a href="#系列回顾" class="headerlink" title="系列回顾"></a>系列回顾</h2><ul>
+<li><a href="/2018/06/27/网络基础-一/" title="网络基础知识(一) TCP/IP五层模型">网络基础知识(一) TCP/IP五层模型</a></li>
+<li><a href="/2018/06/27/网络基础-二/" title="网络基础知识(二) Data Link层详解">网络基础知识(二) Data Link层详解</a></li>
+<li><a href="/2018/06/29/网络基础-三/" title="网络基础知识(三) Network层详解">网络基础知识(三) Network层详解</a></li>
+<li><a href="/2018/07/01/网络基础-四/" title="网络基础知识(四) 子网与路由">网络基础知识(四) 子网与路由</a>
+</li>
+</ul>
+<h2 id="Transport-Layer-传输层"><a href="#Transport-Layer-传输层" class="headerlink" title="Transport Layer 传输层"></a>Transport Layer 传输层</h2><p>传输层在整个网络模型中非常重要, 它对于很多网络可靠性的功能负责, 包括但不限于<a href="https://www.geeksforgeeks.org/computer-network-multiplexing-demultiplexing-transport-layer/" target="_blank" rel="noopener">Multiplexing traffic和demultiplexing traffic</a>.<br><img src="/2018/07/03/网络基础-五/multiplexing_demultiplexing.png" title="Multiplexing and Demultiplexing"><br>简单来说, multiplexing 指的是, 一个网络节点能够传送数据到不同的接收端; demultiplexing 就是反过来. </p>
+<a id="more"></a>
+<h3 id="Port-端口"><a href="#Port-端口" class="headerlink" title="Port 端口"></a>Port 端口</h3><p>传输层通过端口来处理multiplexing和demultiplexing. 端口是一个长度为16bit的数字, 用于指引数据包发送到节点中对应的服务. 举个例子, 当前有一个服务器A, 里面有一个API服务等待被请求, 这个API服务监听端口<code>5000</code>; 如果现在一个程序需要API返回数据, 那么这个请求的目标地址就是服务器A的IP地址, 目标端口就是<code>5000</code>. 如果说网络层满足了主机到主机之间的通信, 那么传输层满足了端口到端口的通信.</p>
+<h3 id="TCP-Segment"><a href="#TCP-Segment" class="headerlink" title="TCP Segment"></a>TCP Segment</h3><p>在之前讲Ethernet Frame的时候踢到Ethernet Frame在payload封装了IP Datagram; 讲IP Datagram的时候提到了里面封装了TCP Segment.<br><strong>TCP Segment</strong> 由两部分组成:</p>
+<ul>
+<li>TCP 头</li>
+<li>数据</li>
+</ul>
+<p>与底层一样, 数据部分封装了上层, 也就是应用层的数据. TCP头含有的字段如下图所示.</p>
+<img src="/2018/07/03/网络基础-五/TCP_header.png" title="TCP Header">
+<h4 id="目标端口-和-发送端口"><a href="#目标端口-和-发送端口" class="headerlink" title="目标端口 和 发送端口"></a>目标端口 和 发送端口</h4><p>顾名思义, 目标端口和发送端口分别表示该数据包要去的地方和从哪个节点发出. 前文提到过, 一个端口的长度是16位的, 那么这两个字段的长度也就是16位的.</p>
+<h4 id="Sequence-Number"><a href="#Sequence-Number" class="headerlink" title="Sequence Number"></a>Sequence Number</h4><p>这个字段的长度是32位, 用于表示该TCP片段位于整个数据包的哪一个位置. Ethernet Frame通常将数据包的大小限制在1518个bytes, 对于大于这个大小的数据包, TCP一般会拆分发送, 这个时候Sequence Number就排上用场了. 在接收端需要按照Sequence Number来组装数据包.</p>
+<h4 id="Acknowledgement-Number"><a href="#Acknowledgement-Number" class="headerlink" title="Acknowledgement Number"></a>Acknowledgement Number</h4><p>这个字段的长度是32位, 它的内容是下一个TCP包的序号. 举个简单的例子, 假设当前数据包的Sequence Number是1, Acknowledgement Number是2, 那么就表示, 当前的数据包序号是1, 下个数据包的序号是2. </p>
+<h4 id="Header-Length"><a href="#Header-Length" class="headerlink" title="Header Length"></a>Header Length</h4><p>长度为4bit, 用于表示 TCP Header的长度.</p>
+<h4 id="Control-Flag"><a href="#Control-Flag" class="headerlink" title="Control Flag"></a>Control Flag</h4><p>这个字节的长度是6bit, 用于表示TCP的Control Flag. 至于Control Flag是什么, 后文会提到.</p>
+<h4 id="TCP-window"><a href="#TCP-window" class="headerlink" title="TCP window"></a>TCP window</h4><p>TCP window是一个16bit长的字段, 里面表明了sequence number的范围</p>
+<h4 id="Checksum"><a href="#Checksum" class="headerlink" title="Checksum"></a>Checksum</h4><p>Checksum同样是16-bit的长度. 原理和Ethernet Frame, IP Datagram的checksum字段一样. 用于验证数据的完整性.</p>
+<h4 id="Urgent-Pointer"><a href="#Urgent-Pointer" class="headerlink" title="Urgent Pointer"></a>Urgent Pointer</h4><p>这个字段的长度是16-bit, 跟Control Flag一起配合使用个. 作用是用来跟接收端的设备表明, 此TCP数据包拥有最高优先级(比其他数据包都重要).</p>
+<h4 id="Options-和-Padding"><a href="#Options-和-Padding" class="headerlink" title="Options 和 Padding"></a>Options 和 Padding</h4><p>一般来说不常使用, 个别情况下用于复杂的协议流程控制. Options + Padding的长度是32bit</p>
+<h4 id="Data-payload"><a href="#Data-payload" class="headerlink" title="Data payload"></a>Data payload</h4><p>真正的TCP数据. 里面封装了Application层的数据.</p>
+<h3 id="TCP-Control-Flag"><a href="#TCP-Control-Flag" class="headerlink" title="TCP Control Flag"></a>TCP Control Flag</h3><p>TCP Control Flag 用于TCP建立和关掉连接. TCP Control一共有6种.</p>
+<ol>
+<li>URG – urgent<ul>
+<li>这个Flag表明这个TCP数据包比较重要, 关于这个数据包的更多信息在<strong>Urgent Pointer</strong>字段里显示</li>
+</ul>
+</li>
+<li>ACK – acknowledge<ul>
+<li>如果一个TCP数据包带有这个Flag, 代表这个数据包的<strong>Acknowledgement Number</strong>应该被验证.</li>
+</ul>
+</li>
+<li>PSH – push<ul>
+<li>带有这个字段的TCP数据包表示接收端设备应当将缓存数据发送到相应的程序当中.</li>
+</ul>
+</li>
+<li>RST – reset<ul>
+<li>带有这个Flag的数据包表示发送端或者接受端不能恢复丢失的TCP数据包或者恢复格式错误的数据包. 简单来说, 就是发送端或者接收端收到TCP数据后无法拼成一个”可以理解”的TCP数据包, 然后告诉对方, 把所有TCP数据包重新发送一遍.</li>
+</ul>
+</li>
+<li>SYN – synchronize<ul>
+<li>用于初次建立TCP连接时, 接收端知道要去验证<strong>sequence number</strong>字段.</li>
+</ul>
+</li>
+<li>FIN – finish<ul>
+<li>当有这个Flag的时候, 表明已经没有TCP数据包会被发送了. TCP连接可以关掉.</li>
+</ul>
+</li>
+</ol>
+<h3 id="TCP建立连接的三次握手"><a href="#TCP建立连接的三次握手" class="headerlink" title="TCP建立连接的三次握手"></a>TCP建立连接的三次握手</h3><img src="/2018/07/03/网络基础-五/TCP_handshake.png" title="TCP Handshake">
+<p>要建立TCP连接, 设备A和设备B要进行3次握手. 假设设备A要和设备B建立TCP连接, 那么过程如下:</p>
+<ol>
+<li>设备A: “我要和你建立TCP连接, 请检查我的sequence number, 然后我们知道这个TCP连接从哪开始”<ul>
+<li>设备A发送包含<strong>SYN</strong> Flag的数据包给设备B</li>
+</ul>
+</li>
+<li>设备B: “好的, 我知道了, 我们开始连接吧, 我接受你的连接请求”<ul>
+<li>设备B发送包含<strong>SYN</strong>和<strong>ACK</strong>的数据包给设备A</li>
+</ul>
+</li>
+<li>设备A: “我确认你发给我的确认信息, TCP连接建立成功”<ul>
+<li>设备A发送包含<strong>ACK</strong>的数据包给设备B</li>
+</ul>
+</li>
+</ol>
+<h3 id="TCP断开连接的四次挥手"><a href="#TCP断开连接的四次挥手" class="headerlink" title="TCP断开连接的四次挥手"></a>TCP断开连接的四次挥手</h3><img src="/2018/07/03/网络基础-五/TCP_wavehand.png" title="TCP Disconnect">
+<p>当要断开当前TCP连接时, 设备A和设备B要进行四次挥手. 过程如下:</p>
+<ol>
+<li>设备B: “我们断开吧”<ul>
+<li>设备B发送包含<strong>FIN</strong> Flag的数据包给设备A</li>
+</ul>
+</li>
+<li>设备A: “断吧”<ul>
+<li>设备A发送包含<strong>ACK</strong> Flag的数据包给设备B</li>
+</ul>
+</li>
+<li>设备A: “我也要断开”<ul>
+<li>设备A发送包含<strong>FIN</strong> Flag的数据包给设备B</li>
+</ul>
+</li>
+<li>设备B: “确认你的断开”<ul>
+<li>设备B发送包含<strong>ACK</strong> Flag的数据包给设备A</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Network/" rel="tag"># Network</a>
+          
+            <a href="/tags/Fundemental-Knowledge/" rel="tag"># Fundemental Knowledge</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/07/01/网络基础-四/" rel="next" title="网络基础知识(四) 子网与路由">
+                <i class="fa fa-chevron-left"></i> 网络基础知识(四) 子网与路由
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/10/网络基础-六/" rel="prev" title="网络基础知识(六) Application 层与OSI 七层模型">
+                网络基础知识(六) Application 层与OSI 七层模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b0096a3c2b16438" async="async"></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Jiakuan Li">
+            
+              <p class="site-author-name" itemprop="name">Jiakuan Li</p>
+              <p class="site-description motion-element" itemprop="description">雷霆雨露，俱是天恩</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">26</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/jiak94" target="_blank" title="GitHub" rel="external nofollow"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/mem_alloc" target="_blank" title="Twitter" rel="external nofollow"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系列回顾"><span class="nav-number">1.</span> <span class="nav-text">系列回顾</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transport-Layer-传输层"><span class="nav-number">2.</span> <span class="nav-text">Transport Layer 传输层</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Port-端口"><span class="nav-number">2.1.</span> <span class="nav-text">Port 端口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-Segment"><span class="nav-number">2.2.</span> <span class="nav-text">TCP Segment</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#目标端口-和-发送端口"><span class="nav-number">2.2.1.</span> <span class="nav-text">目标端口 和 发送端口</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sequence-Number"><span class="nav-number">2.2.2.</span> <span class="nav-text">Sequence Number</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Acknowledgement-Number"><span class="nav-number">2.2.3.</span> <span class="nav-text">Acknowledgement Number</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Header-Length"><span class="nav-number">2.2.4.</span> <span class="nav-text">Header Length</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Control-Flag"><span class="nav-number">2.2.5.</span> <span class="nav-text">Control Flag</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP-window"><span class="nav-number">2.2.6.</span> <span class="nav-text">TCP window</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Checksum"><span class="nav-number">2.2.7.</span> <span class="nav-text">Checksum</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Urgent-Pointer"><span class="nav-number">2.2.8.</span> <span class="nav-text">Urgent Pointer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Options-和-Padding"><span class="nav-number">2.2.9.</span> <span class="nav-text">Options 和 Padding</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Data-payload"><span class="nav-number">2.2.10.</span> <span class="nav-text">Data payload</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-Control-Flag"><span class="nav-number">2.3.</span> <span class="nav-text">TCP Control Flag</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP建立连接的三次握手"><span class="nav-number">2.4.</span> <span class="nav-text">TCP建立连接的三次握手</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP断开连接的四次挥手"><span class="nav-number">2.5.</span> <span class="nav-text">TCP断开连接的四次挥手</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiakuan Li</span>
+
+  
+
+  
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://memory-allocation.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://jiakuan.xyz/2018/07/03/网络基础-五/';
+        this.page.identifier = '2018/07/03/网络基础-五/';
+        this.page.title = '网络基础知识(五) Transport层详解';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://memory-allocation.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+</body>
+</html>

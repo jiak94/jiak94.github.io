@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title><![CDATA[一道有意思的算法题]]></title>
+    <url>%2F2018%2F12%2F14%2F%E4%B8%80%E9%81%93%E6%9C%89%E6%84%8F%E6%80%9D%E7%9A%84%E7%AE%97%E6%B3%95%E9%A2%98%2F</url>
+    <content type="text"><![CDATA[一道有意思的算法题 实现一个数据结构, 要求 key - val 形式 插入的时间复杂度是 $O(1)$ get()的时间复杂度是 $O(1)$ delete()的时间复杂度是 $O(1)$ getRandomVal()的时间复杂度是 $O(1)$ 思路如果不看第五点的要求, 那么这个数据结构非常简单, 就是一个哈希表. 但是哈希表不能满足第5点的要求. 因为哈希表的getRandomVal()的时间复杂度是$O(n)$. 所以这个问题的关键点在如何改进哈希表. 如果要想getRandomVal()是一个$O(1)$的操作, 那么必须要去维护一个数组, 因为数组的getRandomValue()的操作是满足$O(1)$的复杂度要求的. 可是, 当在数据结构中额外维护一个数组的时候, 那个删除的操作就会变成$O(n)$. 因为你需要从数组当中删除, 还需要从key-val对子中删除. 很多时候, 就会卡在这里, 因为删除数组的操作一定是一个$O(n)$的操作. 可是仔细想想, 一定要删除数组吗? 删除数组真的是必要的操作吗? 举个例子, 比如说我数组里面的数据是 [1, 2, 3, 4] 当我要删除 2 的时候, 我只需要吧 2 和 4 的位置换一下, 然后把数组的”长度” -1 就可以 了. 这样就实现了一个 $O(1)$的 “删除” 操作. 为了配合数组的操作, 我们需要在val里加上一个对应数组的index. 比如说, 我要插入 (1, a) 这个对子, 在哈希表里的数据应该长这样: &lt;1, (a, 0)&gt; 实现1234567891011121314151617181920212223242526class SuperMap(object): def __init__(self): self.mapping = dict() self.array = list() self.length = 0 def insert(self, key, val): self.array.append(key) self.array[self.length], self.array[-1] = self.array[-1], self.array[self.length] self.mapping[key] = (val, self.length) self.length += 1 def delete(self, key): index = self.mapping[key][1] self.array[index], self.array[self.length-1] = self.array[self.length-1], self.array[index] self.mapping[self.array[index]] = (self.mapping[self.array[index]][0], index) self.length -= 1 del self.mapping[key] def getRandomVal(self): import random rand_index = random.randint(0, self.length-1) return self.mapping[self.array[rand_index]] def getVal(self, key): return self.mapping[key] 总结这类优化时间复杂度的题目, 往往都是一个路子, 那就是空间换时间. 多想想一些操作是不是真的必要. EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>medium</tag>
+        <tag>data structure</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[微信小程序 【我要猫咪】 抓包分析]]></title>
+    <url>%2F2018%2F10%2F24%2F%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F-%E3%80%90%E6%88%91%E8%A6%81%E7%8C%AB%E5%92%AA%E3%80%91-%E6%8A%93%E5%8C%85%E5%88%86%E6%9E%90%2F</url>
+    <content type="text"><![CDATA[原因最近朋友圈一直在流行一个叫 “我要猫咪的小程序”，主要玩法就是用罐头买猫咪。两只一级猫咪合成一只二级猫咪。每次购买猫咪会导致下次再次购买的时候价格上涨。罐头主要的主要来源是分享到朋友圈，或者微信聊天群，然后获得罐头。每只猫咪每一秒都有固定的罐头产出。一开始升级很快，但是随着级别的升高和猫咪价格的上涨， 解锁新的猫咪变得越来越困难。 而网上的很多的攻略都是说建很多很多个所谓的“刷猫群”，通过不断的分享来获得足够的罐头。这个方法不是不行，而是太繁琐了。所以我开始去想，有没有什么方法可以一步满级省去天天挂机的烦恼。 分析首先, 这是一个微信小程序，而且这个游戏是需要联网的，那么就意味着游戏必须和服务器进行数据交换。为了知道手机和电脑是如何进行数据交换的，我们需要抓包进行分析。 手机的抓包，我一般会使用charles。具体的使用教程google一下就会出来很多， 这里就不赘述了。 发现通过charles，发现这个小程序通信的域名是 https://pongpong.club/。接口是/cat/user/save。 故名思议，这个接口是用来保存用户游戏进度的。要一步到满级，我们就要使用这个接口。下面来看看包里有什么内容。 { &quot;saveTime&quot;: 1540314176994, &quot;coin&quot;: &quot;6.831565647269006e+50&quot;, &quot;diamon&quot;: 199761747, &quot;shopLevel&quot;: 37, &quot;speedup&quot;: 5, &quot;upStartTime&quot;: 1540314175994, &quot;loginDays&quot;: 2, &quot;loginRewardDays&quot;: 2, &quot;lastLoginTime&quot;: 1540311140890, &quot;guideStep&quot;: 4, &quot;friendDraw&quot;: 0, &quot;shareCoinNum&quot;: 0, &quot;shareDiamonNum&quot;: 0, &quot;luckyCount&quot;: 0, &quot;luckyShareCount&quot;: 0, &quot;luckyUpTime&quot;: 0, &quot;dbVersion&quot;: 15767, &quot;version&quot;: &quot;1.0.9&quot;, &quot;slots&quot;: [{ &quot;id&quot;: 37, &quot;pos&quot;: 0 }, { &quot;id&quot;: 37, &quot;pos&quot;: 1 }, { &quot;id&quot;: 37, &quot;pos&quot;: 2 }, { &quot;id&quot;: 37, &quot;pos&quot;: 3 }, { &quot;id&quot;: 37, &quot;pos&quot;: 4 }, { &quot;id&quot;: 37, &quot;pos&quot;: 5 }, { &quot;id&quot;: 37, &quot;pos&quot;: 6 }, { &quot;id&quot;: 37, &quot;pos&quot;: 7 }, { &quot;id&quot;: 37, &quot;pos&quot;: 8 }, { &quot;id&quot;: 37, &quot;pos&quot;: 9 }, { &quot;id&quot;: 37, &quot;pos&quot;: 10 }, { &quot;id&quot;:37, &quot;pos&quot;:11 }], &quot;items&quot;: [{ &quot;id&quot;: 1, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 64, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 2, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 52, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 3, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 16, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 4, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 14, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 5, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 6, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 9, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 7, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 1, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 8, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 5, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 9, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 19, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 10, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 16, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 11, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 15, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 12, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 11, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 13, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 19, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 14, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 20, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 15, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 18, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 16, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 16, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 17, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 15, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 18, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 19, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 16, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 20, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 21, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 22, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 23, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 9, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 24, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 11, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 25, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 4, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 26, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 0, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 27, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 0, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 28, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 3, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 29, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 69, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 30, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 31, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 32, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 13, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 33, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 1, &quot;coinCount&quot;: 97, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 34, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 0, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 35, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 1, &quot;coinUnlock&quot;: 0, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 20 }, { &quot;id&quot;: 36, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 0, &quot;coinUnlock&quot;: 0, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }, { &quot;id&quot;: 37, &quot;buyUnlock&quot;: 1, &quot;diamonUnlock&quot;: 0, &quot;coinUnlock&quot;: 0, &quot;coinCount&quot;: 12, &quot;diamonCount&quot;: 0 }], &quot;shareGrop&quot;: [], &quot;userid&quot;: &quot;[马赛克]&quot;, &quot;openId&quot;: &quot;[马赛克]&quot; } 根据charles抓下来的网络包的内容，我们可以得知要修改那些地方了。 savetime - 保存时间。coind - 金钱。 也就是罐头数量diamond - 爱心数量。另外一种更难获得的罐头。shoplevel - 等级。（要修改这个）slot - 面板上的猫咪信息item- 商店可以出售的猫咪等级。 修改后当把修改过的包发送到服务器上的时候，发现服务器并米有处理，而且还返回了一个错误。我猜测，可能是savetime不正确，可能比最后一次的savetime小，所以出错。当这个错误被改正过来以后，服务器开始正常处理我的包了。 一些Bug当我满心欢喜的想打开游戏欣赏一下成果的时候，发现什么都没有变。我就纳闷了，从charles的抓包结果来说，进入游戏后query玩家信息的时候query到的数据都是我修改后的数据，怎么就没有体现在游戏上呢。猜测一下，可能是微信有缓存之类的机制。所以我就将小程序游戏彻底删除了一遍。再次进入游戏的时候，就发现数据已经是修改后的数据了。 除了修改数据成功，我还发现了游戏里的一些bug。比如说，shoplevel字段应该是商店等级，或者是玩家等级。我是从29级修改至37级。虽然我的等级变了，商店里可以购买的猫咪并没有随着这个等级的变化而变化。如果想要商店里面的东西变化，就必须要修改item字段。 再比如diamond字段，json里面是int，因为开发者认为这个应该是一个小于int范围的一个数字。当我把这个数字填成int范围之外的数字，我猜大概率会overflow。相反，开发者意识到coin字段是会超出int的范围的，所以在这里用了String而不是简单的int。我猜测在服务器端，会将这个string转换成Big Integer再插入到数据表当中。 截图俗话说得好，无图言屌。 HAPPY HACKING]]></content>
+      <categories>
+        <category>security</category>
+      </categories>
+      <tags>
+        <tag>analysis</tag>
+        <tag>network</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[[翻译] 后敏捷开发时代]]></title>
+    <url>%2F2018%2F08%2F23%2F%E7%BF%BB%E8%AF%91-%E5%90%8E%E6%95%8F%E6%8D%B7%E5%BC%80%E5%8F%91%E6%97%B6%E4%BB%A3%2F</url>
+    <content type="text"><![CDATA[原文链接Post Agile: embracing asynchronous processes 作者信息Jilles Van Gurp 后敏捷开发时代就像我们这个行业里(软件开发)很多跟我年纪相仿的人一样, 我记得在internet和敏捷开发概念之前, 事情是怎么被完成. 那时候, 写代码意味着使用昂贵的工具, 要查很多很多的书. Google 和 StackOverflow 还未存在. 办公室里有网络也不是特别常见. 我用买commodore 64时附送的Basic手册来学习编程. 那时候, 并没有敏捷开发. 从那时候开始, 事情起了变化, 这些变化大部分是好的变化. 我对Kent Beck的书Extreme Programming 抱有非常大的热情. 在那个时候, 我正在攻读软件工程的博士学位. 在我2003年的博士论文当中, 我甚至引用了这本书的一些内容. 敏捷开发在开发这个事情上做了很多革命性的改变. 不好的敏捷开发最近这些年, 每个人都在强调又或者在假装他们正在使用敏捷开发. 所以”敏捷开发”这个词变得有点无意义了. 所有银行, 卖保险的, 还有一些外包小作坊都在使用”敏捷开发”. [Captial A Agile of course because they are doing things “by the book”]. 只要有敏捷开发知识的任何人, 都会知道这个不是一个正确的行为. 我曾经在一些研讨会, 讲座上碰到过敏捷开发宣言的签署者讲出这个事情. 敏捷开发事实上是一套工具, 可以让你用和改变成合适你的样子. 照本宣科是开始, 而不是结束. 如果你不了解任何敏捷开发的事情, 你才应该照本宣科.]]></content>
+      <categories>
+        <category>Technical Artical</category>
+      </categories>
+      <tags>
+        <tag>Translation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[[翻译] Candy Japan有多少行代码]]></title>
+    <url>%2F2018%2F08%2F21%2F%E7%BF%BB%E8%AF%91-Candy-Japan%E6%9C%89%E5%A4%9A%E5%B0%91%E8%A1%8C%E4%BB%A3%E7%A0%81%2F</url>
+    <content type="text"><![CDATA[原文链接How many lines of code is Candy Japan? 湾区日报短评 这是每月交$29，寄一盒日本零食给你的电商。Python + App Engine，集成 PayPal 与 Recurly 收钱，还有一些自动化的代码用来优化打印送货地址、退货的流程等。总共 8000 多行 Python 代码。他是 2011 年开始做的，本文写于 2016 年。如果是 2018 年从头开始做的话，可以不用写这么多代码，有很多现成的 API 几行代码就能搞定了。 Candy Japan 有多少行代码?在日本, 有很多非常特别的糖果并没有对日本以外的国家发售, 所以我创立了一个网站叫”Candy Japan”. 我们美两周就会向用户发送一些仅在日本出售的糖果. 在我创立这个网站之初, 并没有”盒子订阅”这种服务, 所以我需要自己来写所有代码. 这篇文章讲的就是我究竟谢了多少东西.. 如果你不愿意听我讲, 这里有一个14分钟的视频 技术栈回到2011年时候, 市面上没有订阅平台, 甚至”订阅”这个词也没什么人在用. 为了写这个网站, 我把网站建立在Google App Engine 上, 语言是python. 这个网站还集成了Paypal和Recurly (一个信用卡支付的中间件). 除了 MixPanel和 Google Analytics之外没有别的依赖包. 界面网站的登陆页有104行代码. 你们觉得Candy Japan有多少行python代码? 找个地方写下你的答案吧, 等你看完文章后核对一下看你离答案有多远. HTML 和 CSS代码不计算在其中, 仅仅是python代码 除了登录页, 用户还能看见一些别的页面, 比如说 FAQ, 之前发送过给用户的糖果列表以及他们的图片. 这些图片存储在 App Engine BlobStore. 加起来一共377行代码. 界面之下如果说登录页和其他用户可见的页面是冰山一角的话, 那么水面以下有一些什么呢? Paypal集成网站有一些代码用于和paypal通信. 在我实现这个的时候, 我当时使用的API叫做 “Paypal Payments Standard NVP API”. NVP代表着”Name-Value Pair”, 是一种比JSON格式更为痛苦的通信方式. 这个集成一共有712行代码. Recurly集成Recurly是一个中间件, 负责用户和信用卡付款付关口的. 由于它的设计比较容易集成, 所以这个集成只有222行代码. 诈骗检测互联网上总会有坏人. 有时候一些信用卡泄漏或者有商家的数据库被拖库都会造成一批可用的信用卡信息泄漏. 坏人会使用这个偷来的信用卡信息在网上消费. 礼品卡是具有很强吸引力的诈骗目标. 因为不仅仅犯罪分子会检查卡号是否可用, 而且还可以获得可能具有一定转卖价值的礼品卡. 诈骗犯们可以在ebay上卖他们的卡, 然后让我退款. 我所面临的情况非常糟糕, 因为ebay会认为他们正在购买一张合法的卡. 很长一段时间内, 网站上是没有礼品卡的, 但是当年底节假日来临时, 我觉得重新使用礼品卡, 但可能仅仅是Paypal可用, 因为paypal有很好的反诈骗手段. 为了能分辨好人和坏人, 我写了587行诈骗检测代码. 购物车体会过诈骗的为题之后, 我不得不停止使用recurly的购物车插件, 因为这个插件的发诈骗手段不够. 为此, 我开发了自己的购物车流程来获取所有可能产生的信号, 这样也可以让我更好的实现反诈骗. 这里有510行代码. 发货在接受订单之后, 我需要把包裹准确的发送到客户的地址. 如果只有几个订阅, 那么手工操作会很容易. 当你有几百个订阅用户之后, 你会需要一套系统来帮你实现这个事情. 我写了一些代码来过一遍所有的账号, 尝试去找到所有的收获地址. 但是, 这个过程也不是永远顺利的, 因为存在有很多corner case. 例如, 账号可以被暂停, 所以我需要手工去调整. 还有一些情况是, 我会给一些并没有付款成功的用户发货, 因为我相信这部分潜在用户会成为正式用户的. 当你每月制作超过1000张运单时, 你的结果是你每月会花费不少的金额在运单上. 我写了一些代码尝试将运单压缩成小的pdf格式, 然后在原来的运单纸上同时打印多张. 与原来的情况相比, 这样子做能够更快, 而且费用会降低. 跟发货相关的代码有1165行. 退货有时候, 邮局会给我们退货. 地址可能是错的, 或者用户搬家了, 没有人接受包裹, 又或者是没有人在家接受包裹. 人工寻找出这些退货的盒子属于哪个账号, 并发送邮件通知用户和调账账号是需要额外的经历的. 为了减轻工作上的负担, 我在盒子上会打印一个条形码, 当邮局退货时, 我只需要扫描一下条形码就可以了. 以往需要10到15分钟来处理退货包裹的流程现在只需要10秒就可以完成. 这个功能一共有505行代码. 后台工具后台管理工具其实有很多种. 比如说, 可以直接看数据库的数据,这可比看账户信息的工具要方便很多. 你还可能会需要根据名字, 地址, 或者订阅号来搜索账户. 另外, 实现这个功能也是为了生成一些报告, 比如说税务报表之类的. 这个后台管理工具有634行代码. 市场营销相关当你上线了一个网站时, 通常来说, 人们并不会发现你这个网站的存在. 在创立之初, 拉拢客户其实不是特别困难. 只需要在类似于”Product Hunt”这类型的网站上发一些帖子. 有一些博客主(网红)也会关注你的网站, 因为这是一个新网站. 但是, 当你的网站存在了一定时间之后, 你的网站已经不是”新”网站了, 热度下来之后不会再有新用户会听说你的网站了, 除非你持续不断地发广告. 这其实非常耗费精力和钱财, 你最后还是会选择去写一些代码来测量你的市场和广告效果. 首先, 因为我需要知道我的目标客户是什么样子的, 我会在订阅时加入一个调查问卷. 你还需要知道你有多少预算可以花在广告上, 因此你会去计算保留率之类的一些数据. 有一些方法可以让更多的访客变成用户, 比如说A/B测试或者给放弃购物车的访客发送提醒等等. 另外一种营销方式是给博客主(网红)们提供免费的小样, 但是这个需要手工修改数据库, 有一点点麻烦, 因为每周我都会收到好多好多问我要小样的请求. 为了减少在这上面花的时间, 我为博客主(网红)们准备了特别的注册通道. 在这个过程中去掉了付款这一步, 取而代之的是我会审查每一个请求, 同意或者拒绝. 所有市场营销相关的功能一共需要1219行代码. 邮件功能当一个新用户注册后, 他会收到一个欢迎邮件. 当博客主(网红)们的申请被同意后, 你会需要发送邮件通知他们. 还有你会需要发送一些提醒给用户, 让他们收到盒子之后去评价. 有时候亲自联系用户是一个比较好玩的事情, 但是整套系统也可以是全自动的. 这个功能花费了253行代码. 代码总量一共有8341行代码. 你猜得怎么样? 如果你的答案是 5000 - 15000之间, 我会说这个猜测是个优秀的猜测. 不错的猜测应该是3000 - 30000这个范围. 还行的猜错是 1000 - 50000 之间. 如果你猜1000行一下, 我会觉得受宠若惊. 如果你猜50000以上, 这又不是汇编程序. 学习到什么我用了几个月来开发这个网站, 然后接下来的5年不断地往网站上添加功能. 如果你现在想创立一个订阅盒子服务, 我会推荐你使用一些现成的平台, 例如Subbly 或者 CrateJoy. 将我的网站拆分为CMS（可能是WordPress）并将订阅部分分开是有意义的。可以通过CMS管理网站上可见的所有内容（常见问题解答，糖果图片，登录页面，博客）。这会减少一些尝试成为CMS的代码，但在增加不必要的复杂性的同时做得很差. 应用引擎NoSQL数据存储不适合运行报告.您最终编写的Python代码可以在SQL中更好地表达. 否则我很高兴选择App Engine.]]></content>
+      <categories>
+        <category>Technical Artical</category>
+      </categories>
+      <tags>
+        <tag>Translation</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(七) DNS 和 Name Resolution]]></title>
+    <url>%2F2018%2F07%2F11%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E4%B8%83%2F</url>
+    <content type="text"><![CDATA[系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 网络基础知识(四) 子网与路由 网络基础知识(五) Transport层详解 网络基础知识(六) Application 层与OSI 七层模型 什么是DNSDNS是 Domain Name Service 的缩写, 中文译作计算机域名系统. 它主要应用于域名的IP地址查询. 举个简单的例子来说, 如果你要访问google.com, 系列之前的文章提到过, 进行网络通信一定需要IP地址, 所以当敲下回车那一下, 首先就是需要通过DNS查找到google.com的IP地址, 然后才是建立TCP连接. 为什么需要DNS对于人脑来说, 记住你要访问的网站的IP地址并不是一个好主意. 人类对数字的敏感程度远没有对单词的敏感程度高, 为了方便记忆, 域名通常是由英语单词说组成, 那么就需要一个东西来记住跟域名对应的IP地址. DNS 服务器DNS的查询过程被称作 Name Resolution. 首先需要明确的是, name server是配置在网络节点上的服务器, 对于现代计算机网络来说, 有几个东西是需要被配置在网络节点上的: 除了之前提到的IP地址, 子网掩码, 网关, 最后一个就是DNS服务器. 不过, 没有DNS服务器也不是不行, 只要能记住IP地址就可以了. 对于DNS服务器来说, 有5大基本类型: Caching Name Server Recursive Name Server Root Name Server TLD Name Server Authoritative Name Server 通常来说, caching name server是由ISP或者局域网提供的, 主要用来在一段时间内储存查询过的域名和IP对. 大部分的caching name server 也是recursive name server . Recursive name server是用来做DNS完整查询的. 举个例子:电脑A和电脑B都连接在同一个网络内, 电脑A请求访问www.google.com. 为了能成功连接google的服务器, 服务器的IP地址是必须被知道的. 所以电脑A向本地DNS服务器请求www.google.com的IP地址, 很不幸缓存里没有. 那么就需要做一个完整的DNS查询了. 得到正确的IP之后, 这个IP地址会被发送到电脑A, 同时也将储存在缓存DNS服务器里面. 过了不久, 电脑B也请求访问www.google.com, 查询的步骤还是一样, 不过, 由于电脑A早些时候已经访问过www.google.com, 所以查询记录已经存在于缓存DNS服务器, 所以这次电脑B不需要做一个完整的DNS查询, 它可以直接在缓存DNS服务器中获取www.google.com的IP地址. 所有存在于DNS服务器的域名都有TTL(Time To Live), 这是值是一个以秒问单位的值. 域名的拥有者将设定这个值. 比如说, 600. 那么, 这个域名在缓存DNS服务器中存活的时间就是10分钟. 10分钟后将会被从缓存DNS服务器中删除. DNS查询过程第一步, 电脑需要连接本地的DNS服务器. 第二步, 本地DNS服务器需要访问root name server. Root name server在全世界一共有13个. 他们负责将查询的query发送给TLD name server. TLD是Top-Level Domain的缩写. 第三步, TLD name server将返回一个跳转, 告诉本地DNS服务器去跟一个authoritative name server联系, 去查询IP地址. 第四步, authoritative name server返回所查询域名的IP地址. DNS和UDP系列之前的文章在Transport层主要描述了TCP协议, 对于UDP协议一句带过. 所以这篇文章, 需要介绍一下UDP. 在DNS查询中, Transport层的通信协议是UDP而不是TCP. 为什么DNS查询是UDP的?UDP和TCP最大的区别是UDP是无连接的, 意味着不需要像TCP一样进行三次握手来建立连接和四次挥手来断开连接, 也就意味着, 不需要发送大量的数据包. 通常来说, 一个DNS的查询请求和响应能被封装在一个UDP datagram里面, 还有一点是, DNS会产生极大的trassfic, 如果使用TCP的话, 会使得网络负荷加大. 虽然使用缓存DNS服务器能帮助减少一些查询请求, 但是总体来说, DNS查询的流量是极大的. TCP协议下的DNS查询首先电脑A需要和本地DNS服务器进行连接, 3次握手 (3个数据包). 然后电脑A需要发送真正的DNS查询请求 (1个数据包). 然后DNS服务器需要返回一个确认收到请求的响应 (1个数据包). 本地DNS服务器将和root name server进行连接 (3个数据包), 发送请求(1个数据包), 接受请求的确认(1个数据包), 接受响应(1个数据包), 发送响应确认(1个数据包), 然后断开连接(4个数据包). 然后是本地DNS服务器和TLD name server打交道 (11个数据包). 然后本地DNS服务器和authoritative name server打交道 (11个数据包). 然后本地DNS服务器发送响应给电脑A (1个数据包), 电脑A确认响应 (1个数据包), 然后断开连接(4个数据包) 使用TCP协议完成一个完整的DNS查询, 最少需要发送$5 + 11 + 11 + 11 + 6 = 44$个数据包. UDP协议下的DNS查询对于UDP协议来说, 发送请求到本地DNS服务器需要1个数据包; 本地DNS服务器和root name server打交道, 请求+响应需要2个数据包; 本地DNS服务器和TLD name server打交道, 请求+响应需要2个数据包; 本地DNS服务器和authoritative name server打交道, 需要2个数据包; 本地DNS服务器响应DNS查询请求需要1个数据包. 使用UDP协议完成一个完整的DNS查询, 只需要$1 + 2 + 2 + 2 + 1 = 8$个数据包, 高下立判. 无响应怎么办?我们都知道, UDP是不保证数据能传输到发起请求的电脑上的, 所有有些人会好奇, 如果本地DNS收不到响应或者电脑收不到响应怎么办? 办法很简单, 那就是再发一遍. Resource RecordA记录A记录用于讲一个域名指向一个IPV4地址. 一个A记录对应一个域名, 但是一个域名可以对应多个A记录. 这个技术被称为DNS Round Robin, 用于分流流量到多个IP上. 对于域名 www.google.com来说, 每天访问这个域名的流量是巨大的. 为了减轻服务器的负担, 管理员可以为在authorative name server为这个域名配置4个A记录. 假设这4个ip地址是 10.1.1.1 10.1.1.2 10.1.1.3 10.1.1.4 当电脑A进行DNS查询的, name server将按照上面的顺序返回4个IP地址. 电脑A会尝试去连接10.1.1.1, 如果失败的话再按顺序尝试. 然后电脑B进行DNS查询的时候, name server依然会返回4个IP地址, 但是顺序会变. 10.1.1.1被放到了末尾, 10.1.1.2则被顶到了第一个. 每进行一次DNS查询的时候, 返回的顺序都会进行一次改变. Quad A Record与A记录不同的是, Quad A Record指向的是一个IPV6的地址. CNAMECNAME 用于将流量从一个域名重定向到另外一个域名. 还是以www.google.com为例子, 为了保证用户在浏览器输入google.com的时候, 能够访问正确的服务器, 需要在google.com的CNAME中配置www.google.com, 这样每当用户访问google.com的时候, 流量能被重定向到www.google.com. MX 记录MX 是mail exchange的简称, 这个记录用于将邮件服务器指向一个IP地址.]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(六) Application 层与OSI 七层模型]]></title>
+    <url>%2F2018%2F07%2F10%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E5%85%AD%2F</url>
+    <content type="text"><![CDATA[系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 网络基础知识(四) 子网与路由 网络基础知识(五) Transport层详解 Application Layer 应用层应用层是整个网络模型中最靠近用户, 常用的协议有 HTTP, FTP/SFTP, SMTP等等. 比如说浏览器, 市面上有很多很多浏览器, 常见的有 Chrome, Firefox, Safari, Edge等等, 服务器有 nginx, apache, tomcat 等等, 但是无论一个网站的后端使用什么样的服务器, 用户使用什么样的浏览器, 数据都能被正确解读, 这是为什么呢? 那是因为服务器和浏览器都采用了同一个协议, 叫 HTTP 协议. 对于应用层来说, 它的数据也需要被封装到底层. 对于不同的协议, 数据包的格式/字段可能会不一样, 但是对于底层的协议来说, 并不care. 它们要做的就是把应用层的数据包封装到data payload里面, 然后传输到相应的网络节点. OSI 七层模型OSI是 Open System Interconnection 的缩写. 与之前介绍的5层模型不一样的地方是, 在之前的5层模型的基础上额外增加了两层, 它们分别是 Session 层和 Presentation 层. 这两层位于Transport Layer (传输层) 和 Application Layer (应用层) 之间. Session 层session层主要负责连接应用层和传输层的对话. 换句话说, 就是session 层负责构建传输层和应用层沟通的通道. Presentation 层当Session层把数据包传递给presentation层之后, presentation层需要做的是确认数据包能够被应用程序成功处理. 也就是说,它要确保应用程序能”看懂”这个数据包的内容. 日常使用方面就是传输中的加密/解密都在这一层完成. 网络工作原理在这一小节中, 我将假设一个场景来解释5成模型是如何协同工作的. 现在有三个网络: 网络A: 地址是 10.1.1.0/24 网络B: 地址是 192.168.1.0/24 网络C: 地址是 172.16.1.0/24 两个路由器: 路由A: 连接网络A和网络B; 接口ip地址分别是 10.1.1.1和192.168.1.254 路由B: 连接网络B和网络C; 接口ip地址分别是 192.168.1.1和172.16.1.1 两台电脑: 电脑A: 客户端, 存在于网络A中; ip地址是10.1.1.100 电脑B: 服务端, 存在于网络C中; ip地址是172.16.1.100. 因为这个是服务器, 所有个服务器软件在监听80端口. 现在, 一个用户打开了 电脑A 的浏览器, 并输入了一个172.16.1.100. 在他敲击回车后会发生什么呢? 浏览器知道, 它需要向172.16.1.100这个地址请求网页. 它需要和172.16.1.100 端口 80 建立 TCP 连接. 网络A检查后发现 172.16.1.100不是一个本地的ip地址. 电脑A知道它需要向它的本地网关发送数据包. 网关地址是 10.1.1.1 电脑A搜索 ARP表 来确定 10.1.1.1的MAC地址. 不幸的是, ARP表中没有10.1.1.1的MAC地址. 电脑A发送了ARP广播, 请求 10.1.1.1的MAC地址. 路由器A接收到广播后发现, 10.1.1.1是自己的地址, 所以它回应了自己的的MAC地址. 电脑A收到路由器A的MAC地址后, 开始准备数据包. 因为这是一个TCP数据包, 所以准备一个TCP端口 操作系统判定端口50000是空闲的, 所以将浏览器连接到此端口 准备好的TCP数据包现在被传递到 网络层. 网络层将构建一个IP Header 关键参数 目标ip 172.16.1.100 源头ip 10.1.1.100 TTL: 64 TCP 数据包被封装到pay load字段 有了IP数据包之后, 电脑A需要把这个数据包发送到路由A的MAC的地址. 连接层 构建一个Etherframe Datagram 关键参数 目标MAC地址 (路由A的MAC地址) 源头MAC地址 (电脑A的MAC地址) IP数据包被封装到 Ethernetframe datagram里面 数据包经过Physical Layer, 被发送到路由A 路由器A对数据包进行检查. 目标MAC是否和自己的MAC一致 checksum是否一致 路由A将 Ethernetframe的payload取出, 也就是IP Datagram 路由A将检查IP Datagram的checksum 将 目标IP 字段取出 路由A发现, 如果要到达172.16.100, 最短路径是经过路由B 路由A将IP Datagram的TTL字段减1 计算新的checksum 检查Rounting Table, 获取路由B的MAC地址 构造新的Ethernetframe Datagram 封装TCP 数据包送到路由B 重复上面的步骤… 数据包被送到电脑B 取出TCP数据包 获取目标端口 操作系统判定80端口打开了 上面就是一次传输过程, 如果要完成一次TCP三次握手, 这个过程将被重复三次.]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(五) Transport层详解]]></title>
+    <url>%2F2018%2F07%2F03%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E4%BA%94%2F</url>
+    <content type="text"><![CDATA[系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 网络基础知识(四) 子网与路由 Transport Layer 传输层传输层在整个网络模型中非常重要, 它对于很多网络可靠性的功能负责, 包括但不限于Multiplexing traffic和demultiplexing traffic.简单来说, multiplexing 指的是, 一个网络节点能够传送数据到不同的接收端; demultiplexing 就是反过来. Port 端口传输层通过端口来处理multiplexing和demultiplexing. 端口是一个长度为16bit的数字, 用于指引数据包发送到节点中对应的服务. 举个例子, 当前有一个服务器A, 里面有一个API服务等待被请求, 这个API服务监听端口5000; 如果现在一个程序需要API返回数据, 那么这个请求的目标地址就是服务器A的IP地址, 目标端口就是5000. 如果说网络层满足了主机到主机之间的通信, 那么传输层满足了端口到端口的通信. TCP Segment在之前讲Ethernet Frame的时候踢到Ethernet Frame在payload封装了IP Datagram; 讲IP Datagram的时候提到了里面封装了TCP Segment.TCP Segment 由两部分组成: TCP 头 数据 与底层一样, 数据部分封装了上层, 也就是应用层的数据. TCP头含有的字段如下图所示. 目标端口 和 发送端口顾名思义, 目标端口和发送端口分别表示该数据包要去的地方和从哪个节点发出. 前文提到过, 一个端口的长度是16位的, 那么这两个字段的长度也就是16位的. Sequence Number这个字段的长度是32位, 用于表示该TCP片段位于整个数据包的哪一个位置. Ethernet Frame通常将数据包的大小限制在1518个bytes, 对于大于这个大小的数据包, TCP一般会拆分发送, 这个时候Sequence Number就排上用场了. 在接收端需要按照Sequence Number来组装数据包. Acknowledgement Number这个字段的长度是32位, 它的内容是下一个TCP包的序号. 举个简单的例子, 假设当前数据包的Sequence Number是1, Acknowledgement Number是2, 那么就表示, 当前的数据包序号是1, 下个数据包的序号是2. Header Length长度为4bit, 用于表示 TCP Header的长度. Control Flag这个字节的长度是6bit, 用于表示TCP的Control Flag. 至于Control Flag是什么, 后文会提到. TCP windowTCP window是一个16bit长的字段, 里面表明了sequence number的范围 ChecksumChecksum同样是16-bit的长度. 原理和Ethernet Frame, IP Datagram的checksum字段一样. 用于验证数据的完整性. Urgent Pointer这个字段的长度是16-bit, 跟Control Flag一起配合使用个. 作用是用来跟接收端的设备表明, 此TCP数据包拥有最高优先级(比其他数据包都重要). Options 和 Padding一般来说不常使用, 个别情况下用于复杂的协议流程控制. Options + Padding的长度是32bit Data payload真正的TCP数据. 里面封装了Application层的数据. TCP Control FlagTCP Control Flag 用于TCP建立和关掉连接. TCP Control一共有6种. URG – urgent 这个Flag表明这个TCP数据包比较重要, 关于这个数据包的更多信息在Urgent Pointer字段里显示 ACK – acknowledge 如果一个TCP数据包带有这个Flag, 代表这个数据包的Acknowledgement Number应该被验证. PSH – push 带有这个字段的TCP数据包表示接收端设备应当将缓存数据发送到相应的程序当中. RST – reset 带有这个Flag的数据包表示发送端或者接受端不能恢复丢失的TCP数据包或者恢复格式错误的数据包. 简单来说, 就是发送端或者接收端收到TCP数据后无法拼成一个”可以理解”的TCP数据包, 然后告诉对方, 把所有TCP数据包重新发送一遍. SYN – synchronize 用于初次建立TCP连接时, 接收端知道要去验证sequence number字段. FIN – finish 当有这个Flag的时候, 表明已经没有TCP数据包会被发送了. TCP连接可以关掉. TCP建立连接的三次握手 要建立TCP连接, 设备A和设备B要进行3次握手. 假设设备A要和设备B建立TCP连接, 那么过程如下: 设备A: “我要和你建立TCP连接, 请检查我的sequence number, 然后我们知道这个TCP连接从哪开始” 设备A发送包含SYN Flag的数据包给设备B 设备B: “好的, 我知道了, 我们开始连接吧, 我接受你的连接请求” 设备B发送包含SYN和ACK的数据包给设备A 设备A: “我确认你发给我的确认信息, TCP连接建立成功” 设备A发送包含ACK的数据包给设备B TCP断开连接的四次挥手 当要断开当前TCP连接时, 设备A和设备B要进行四次挥手. 过程如下: 设备B: “我们断开吧” 设备B发送包含FIN Flag的数据包给设备A 设备A: “断吧” 设备A发送包含ACK Flag的数据包给设备B 设备A: “我也要断开” 设备A发送包含FIN Flag的数据包给设备B 设备B: “确认你的断开” 设备B发送包含ACK Flag的数据包给设备A]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(四) 子网与路由]]></title>
+    <url>%2F2018%2F07%2F01%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E5%9B%9B%2F</url>
+    <content type="text"><![CDATA[系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 网络基础知识(三) Network层详解 名词解释SubnettingSubnetting 是将一个大的网络分成若干个独立的子网络的动作, 叫做subnetting. Subnet Mask 子网掩码在上一篇系列文章当中, 提到了两个概念 Network ID 和 Host ID. 但是, 当网络被分成若干个子网的时候, 我们就需要一个新的概念来定位子网, 那就是 Subnet ID. 大家都知道, 32位的IP地址已经被全部用来表示Network ID 和 Host ID了, 并没有留位置给Subnet ID, 所以当有子网的时候, Host ID的一些字节需要用来表示Subnet ID. 这样, 一个32位长度的IP地址就可以准确地表示目的地了. 在Internet层面来说, 核心路由只关心Network ID, 然后把datagram送到相应的网关路由; 相应的网关路由会把datagram送到相应的节点或者其他路由. 最后Host ID会被最后一个路由用来把datagram送到对应的节点或者设备上. 那么Subnet ID是怎么被计算出来的呢? 那就是通过 subnet mask 被计算的. Subnet Mask跟IP地址一样, 长度都是32位. 为了跟清楚的说明 subnet mask, 我将用subnet mask和ID地址对应起来说. 假设现在有一个IBM公司的IP地址, 9.100.100.100, 如果将这个IP地址用二进制的形式表示出来, 那么就是 1001.1100100.1100100.1100100; 需要注意的是, IP地址是32位的, 也就是4个octet, 所以当一个octet不满8位的时候, 需要补0. 所以, 这个IP地址应该表示成 0000 1001.0110 0100 0110 0100.0110 0100 一个常用的subnet mask, 255.255.255.0, 用二进制表示, 就应该是1111 1111.1111 1111.1111 1111.0000 0000. 当我们需要计算子网ID的时候, 只需要将IP地址和子网掩码做AND逻辑运算, 得出的结果就是子网ID. 换句话说, 如果我们需要知道9.100.100.100和 9.100.100.101是否在同一个子网当中, 我们只需要做AND逻辑运算, 得出结果都是 0000 1001.0110 0100. 0110 0100. 0000 0000. 那也就意味着两个IP地址同属于同一个子网. 对于IP地址和子网掩码, 表示方式还有一种. 对于subnet mask 255.255.255.224来说, 它的二进制表示方式是1111 1111.1111 1111.1111 1111. 1110 0000. 开头有27个1, 通常这个subnet mask也会表示成 9.100.100.100/27. Routing网络的核心是Routing. 通过Routing, 使得数据在网络中能从一个节点传输到另一个节点. Router 路由器Router是一种能够转发网络数据的网络硬件设备. 对于路由来说, 它至少有两个网络接口, 分别连接两个不同的网络. 一般来说, 基本的路由操作是这样的: 路由器接收到其中一个网络接口的数据包 路由器检查这个数据包的目标IP地址 路由器查看routing table来获取这个数据包的目标网络 路由器讲这个数据包从离目标网络最近的接口转发 再举一个例子现在一个路由器, 他的两个网络接口接在网络A和网络B上. 网络A的地址空间是 192.168.1.0/24; 网络B的地址空间是10.0.0.0/24. 如果设备A要把一个数据包发送到设备B, 那么它的操作过程是这样的: 因为设备B的IP地址是10.0.0.10并不在网络A的子网内, 所以设备A将数据包发送到路由器. 路由器收到数据包之后, 讲Etherframe的其他内容去掉, 只留下IP Datagram的内容. 路由器验证IP Header来获取这个数据包的目标IP地址, 也就是10.0.0.10 路由器查询routing table, 得到网络B的是这个数据包的目标网络. 因为网络B是直接连接在路由上的, 所以大概率在ARP表中可以得到设备B的MAC地址. 路由器将重新制作一个数据包, 把IP Datagram封装起来, 发送给设备B 看到这里, 可能会出现的疑惑是, 为什么路由器需要重新封装一个数据包? 用原来的数据包不行吗? 答案是 不行. 原因很简单: 在第一步时, 设备A判断目标IP地址不在本地子网内, 所以他讲Ethernet Frame里面的目标MAC地址设置成路由器的MAC地址. 所以, 如果在第六步的时候, 路由器不重新制作数据包, 那么这个数据包将会被丢弃, 因为目标MAC地址与设备B的MAC地址不一致. 同样的, 发送者的MAC地址也会被更改成路由器的MAC地址. 在第六步封装的时候, 还需要注意一个地方, 那就是TTL字段会自减1, checksum也会被重新计算. Routing Table 路由表一个最基本的路由表由4列组成 Destination Network 目标网络 Next Hop Total Hops Interface Destination Network中储存着路由知道的所有Network, 内容就是Network ID和子网掩码. Next Hop储存着路由器连接着的Network ID和子网掩码. Interface字段记录了每个接口的用途. Total Hops是路由表中最重要的一个字段. 在一个复杂的网络中, 节点A到节点B点路径不止一条, 一般来说, 路由器会选择最短的路径(为了减少延迟); 但是这个最短路径可能会变, 比如说中间一些路由器挂掉了. Total Hops就是用来记录最短路径的.]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(三) Network层详解]]></title>
+    <url>%2F2018%2F06%2F29%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E4%B8%89%2F</url>
+    <content type="text"><![CDATA[系列回顾 网络基础知识(一) TCP/IP五层模型 网络基础知识(二) Data Link层详解 IP 地址IP地址长度为4bytes, 也就是32bit. 一个IPV4的地址有4个octet组成, 通常来说, 每一位有10进制数字组成. 与MAC地址不同的是, IP地址通常有网络公司进行分配. 举个例子来说, IBM拥有所有以 9 开头的IP地址. 所以, 当数据包需要被传送到 9.0.0.1的之后, 数据只需要被送到IBM公司其中一个路由就可以了. IBM公司的路由就会接管. 另外一个很重要的知识点就是, IP地址与硬件无关. 所以, 一台设备连接至不同网络的时候, IP地址会变, 但是MAC地址永远不变. 当一个设备连接到网络时, 通常来说, IP会被自动分配. 这种通过DHCP技术获得的IP, 叫做动态IP, 相应的, 如果如要手动设置的IP, 这种IP叫做静态IP. IP 地址本身也被分成两部分: 第一部分叫做 Network ID, 第二部分叫做 Host ID. Address Class 系统Address Class定义了如何将全世界所有的IP进行分类. IP地址的分类只要有3种: Class A; Class B; Class C. Class A: 第一个Octet为 Network ID, 剩下的为 Host ID的地址即为A类地址. Class B: 头两个Octet为 Network ID, 后两个Octet为 Host ID的地址即为B类地址 Class C: 头3个Octet为 Network ID, 最后一个Octet为 Host ID的地址即为C类地址. IP Datagram跟 Ethernet Frame 一样, IP Datagram 也是有严格的格式限制的. IP Datagram 的header里面比Ethernet Frame的header所含的信息多很多. VersionIP Datagram的头4个bit是Version. 这里表明了这个IP Datagram用的什么版本的协议. 目前被使用得最多的是IPV4协议, 但是现在很多的服务器都渐渐开始使用IPV6了. Header Length紧接着 Version, 下一个字段是 Header Length. 它表明了这个IP Datagram的header的长度. 这个字段的长度同样也是4个bit. 在IPV4, 大多数情况下, header的长度是20. 事实上, 20是ip header的最小长度. Service Type下一个字段是 Service Type. 它的长度为8个bit. 这个字段被QoS技术使用. 关于QoS, 可以点这里了解详情. QoS技术存在的意义可以让路由器分辨出哪一个IP Datagram更重要(更高优先级). Total LengthTotal Length字段的长度为16个bit. 这个字段表明了IP Datagram的 总长度. 需要注意的和 Header Length区分. Identification这个字段的长度是16个bit. 它被用来讲IP Datagram的信息组合在一起. 因为 Total Length 是16个bit的长度, 所以一个IP Datagram的长度就是16个bit所能表示的最大值, 也就是65,535. 如果说需要传输的数据的大小超过65,535, 那么就需要讲数据分段. 当接受的设备收到若干个IP Datagram之后, 如果他们的 Identification字段的值一样, 那就表明, 这几个IP Datagram应该被组合在一起. Flag 和 Fragment Offset之所以把这两个字段放在一起讲, 是因为 Flag 字段表明这个IP Datagram是否是其中一个片段. 如果是其中一个片段, 那么 Fragment Offset是帮助接受设备把这些IP Datagram重新组合. 说到把IP Datagram分段, 是因为每个LAN的最大长度IP Datagram是不一致的. 如果说要把一个IP Datagram从一个LAN传输到另一个LAN, 但是目标LAN的最大IP Datagram比当前这个IP Datagram的大小要小, 那么就必须把这个IP Datagram分段进行传输. TTL (Time To Live)这个字段是个8-bit长度的字段. 它用于表示在datagram被丢弃之前能在路由之间跳多少次. 当datagram到达一个新的路由, 路由会把TTL字段减1; 如果路由遇到TTL为0的Datagram, 那么会直接丢弃. 这样做的意义是, 防止路由的死循环. 如果路由错误的发送了一个datagram到一个错误的地方导致死循环, 这个字段可以帮助路由丢弃数据包而不是一直在网络中传送这个数据包. Protocal这个字段长度也是8-bit. 用于表示transpor层中使用的协议. 最常见的就是 TCP 或是 UDP. Header Checksum这个字段是datagram header的checksum值. 接收端会校验这个值, 如果值不一致, 表明数据不完整, 那么这个datagram会被丢弃. 发送IP 和 目标IP前面提到, IP地址是的长度是32bit, 所以这两个字段也是32bit长度. IP Options这个字段不是必须的字段. 主要是测试IP Datagram的时候用于设置一些特殊字符. Padding因为IP Option不是一个特殊字段, 它的长度也不一定. 所以Padding字段就是一堆0, 用于补全IP Option字段的长度, 使长度等于32bit. 封装 在讲 Ethernet Frame的时候讲到, 提到有一个字段叫做 Payload, 这个payload字段的内容, 其实就是IP Datagram. IP Datagram也有一个 Payload 字段, 内容就是 Transport层的Payload. 这个说明了, 模型的每一层都封装这上一层的数据包. ARPARP 是 Address Resolution Protocal 的缩写, 它用于发现网络中某个IP地址的节点的硬件地址, 也就是MAC地址. 一般来说ARP通过查表来发现该IP地址的MAC地址. 每个LAN都维护一个ARP表, key是IP 地址; value是拥有该IP地址的硬件地址. 如果ARP表没有这个IP地址怎么办? 那么就会发送一个 ARP 广播给LAN的每一个节点. 举个例子, 如果需要知道10.20.30.40的MAC地址, 而ARP表没有, 那么就会发送一个ARP广播, 然后10.20.30.40这个节点收听到广播后将回复自己的硬件地址. 同时, 这个MAC地址也将会被存在ARP表, 以便下次使用. 还有一点需要注意的是, ARP表并不是不变的. 每隔一段时间, ARP表会被清空, 以应对可能的网络变化.]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(二) Data Link层详解]]></title>
+    <url>%2F2018%2F06%2F27%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E4%BA%8C%2F</url>
+    <content type="text"><![CDATA[系列回顾 网络基础知识(一) TCP/IP五层模型 Ethernet 与 MAC 地址目前, 用于网络之间通信的最常用协议, 叫 Ethernet. Data Link层抽象了 Physical层, 模型中更高级的层可以获取他们需要的Physical层的信息. 对于Data Link层来说, 它的责任是保证模型中的 Network层, Transport层和Application层, 可以同时工作, 而不用关心设备于网络是怎样连接的. 历史Ethernet 首次被提出是在1980年, 到1983年完成标准化流程. 在这之后, Ethernet标准被修改了数次, 目的都是为了提高带宽. 对于1983年的Ethernet标准和今天的Ethernet标准来说, 最大的区别在于当今的Ethernet标准包含的 Switch 和 Hub 的内容, 因为在1983年, 这两件网络设备还没有被发明出来. 这意味着, 在1983年的版本当中, 所有在网络中的设备共享一个 collision domain. Collision Domain - Wiki. 简单来说, collision domain 是一个网段, 在这个网段当中, 每次只能有 一个 设备在通信, 因为在这个网络当中的数据, 是会发送到当前网段当中的 所有 节点. 如果两个设备同时通信, 数据就会冲突. EthernetEthernet的出现解决了这个问题. 这个手段叫做 CSMA/CD, 它主要的功能是用来确定通信频道是否通畅和设备是否可以传输数据. 工作原理也特别简单, 如果当前网段当中没有数据在传输, 那么任意网络节点都可以发送数据; 如果当前网络中两个设备试图发送数据, 那么发送的动作将会被终止, 所有试图发送数据的设备将会随机等待一段时候后在重试. MAC 地址由于在collision domain中, 所有网络节点都可以收到在网段中传送的所有数据, 这意味着我们需要一个手段来弄明白, 这些数据的目标节点是什么. 这就是 MAC地址 的意义. MAC地址是网络接口的唯一编号, 它是一个48-bit的数字, 这个数字分成6组16进制的数字. 一个MAC地址被分成两段, 前三个octet代表着OUI, OUI可以简单理解成”厂商编号”. 后三个octet将由设备制造商执行分配. 有了MAC地址, Ethernet就可以通过MAC地址判断出, 网段中的数据由谁发送, 接受者应该是谁. Unicat, Multicast 和 BroadcastUnicastunicast 指的是数据在网络中传播的时候, 目标地址为单一目标的传播方式. 在Ethernet Level来说, unicast 靠的是MAC地址中的一个特别的字节在完成. 如果MAC地址中第一个octet中最后一个字节为0, 那么意味着在进行unicast transmision. 简单来说, 数据会发送到整个网络, 但是只有相应的地址的设备会接受信息. 如果最后一个字节是1, 那么这个传播方式被称为 Multicast Multicast与 Unicast 不同的是, 每个设备根据自己硬件的MAC地址来决定是否接受传播的信息 BroadcastBroadcast 会把数据发送给网络中所有节点. 完成Broadcast, 需要一个特殊的地址, 这个地址被称为 Broadcast address. 在Ethernet中规定了, Broadcast Address是 FF:FF:FF:FF:FF:FF. Ethernet Frame Data packetData packet 指的是在网络中进行穿破的数据包. Data packet这个词并不是指具体哪一层的数据, 而是只节点A到节点B的数据. 在Ethernet, data packet被称作 Ethernet Frame. 它是一种有着特殊格式的数据包. 有了这个格式, 在physical层的网络接口就可以将一串bits转化, 然后在网络中传播. Preamble对于Ethernet Frame来说, 几乎所有字节都是固定大小的. Ethernet Fram第一部分, 叫做preamble. Preamble的长度为8个bytes, 64个bits. 每个preamble可以被分为两部分. 前七个byte是由0和1组成. 最后一个bytes是SFD, start frame delimiter. 这个byte告知数据接收的设备, 这是preamble的最后一个byte, Ethernet Fram的内容将在这个byte之后出现. 在preamble之后, 就是发送者的MAC地址, 然后是接受者MAC地址. VLAN Tag如果这个tag存在的话, 这个fram叫做 VLAN FRAME. VLAN 是virtual LAN的缩写, 是一种可以在同一个网络设备上运行多个LAN的技术. EthernetType在两个Mac地址后结束后, 或者VLAN Tag结束后是EthernetType. 它的长度为2个bytes, 16bits. 用来描述Ethernet Frame内容的协议. PayloadPayload就是实际要传输的数据. 在一个Ethernet Frame里面, 只要不是header, 它就是payload. 长度可以从46个bytes到1500个bytes. 里面包含了Network层, Transport层和Application层所需要传输的所有数据. FCSFCS是 frame check sequence的缩写. 它的长度为4个bytes, 32个bit. 内容就是整个ethernet frame的checksum. 关于checksum, 可以在这里了解. 接受信息的设备在接受到ethernet frame之后会计算整个frame的checksum, 如果和FCS不一致, 那么这个frame会被丢弃.]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[网络基础知识(一) TCP/IP五层模型]]></title>
+    <url>%2F2018%2F06%2F27%2F%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80-%E4%B8%80%2F</url>
+    <content type="text"><![CDATA[TCP/IP 五层模型如果说要理解计算机网络, 那么我们需要理解很多的细节, 理解参与网络的每一个部分. 最基础的部分, 就是计算机网络模型. 这个世界上有很多类型的网络模型, 他们都大同小异, 这里主要讲讲TCP/IP的五层模型. 首先, 需要定义一下这个五层模型到底是什么样的. 从上到下, 分别是 Application, Transport, Network, Data Link 和 Physical. 越接近底层, 越靠近硬件. Physical 层顾名思义, Physical层是跟硬件有关, 它代表了连接计算机的硬件设备. 包括线缆, 接头等等. 它还包含着如何向网络中其他节点发送信号的方法. Data Link 层Data Link层, 也称为 Network Access层. 这一层当中, 包含了整个网络的第一个协议, 那就是信号的定义. 在Physical层当中定义了如果向网络中的节点发送信号, 而在这一层当中, 定义了每一个信号代表着什么样的意思. 有了这一层的这个协议, 那么网络中的节点就可以相互沟通了. 这个协议有很多种, 生活中应用范围最广的就是 Ethernet 协议了. Network 层Network层, 也被称为Internet层. 这一层的存在允许了不同 网络 之间通过路由器沟通和连接. 若干个节点可以组成一个网络, 若干个网络连接起来的网组叫做 internetwork, 其中最著名的是今天非常流行的internet. Data Link层负责从每个网络节点中获取信息, Network层负责把信息送到它应该去的 网络节点. 可以想象得到的是, 如果用家里的电脑请求internet上一个服务器的信息, 那么就是Data Link层为数据运输提供了方法, 然后Network层负责把数据运输到你家所在的网络节点. 在Network层里, 最常用的协议就是IP协议. 可以说IP协议是互联网的核心. Transport 层Transport层的作用, 就是把获取到的数据, 送到它应该去的地方. 举个例子, 如果你在电脑里同时开着浏览器, 和邮件. 那么获取到的数据应该被送往那个程序呢? 这就是Transport层决定的. Transport层负责分清楚什么样的数据应该传送到什么端口. 当我们听到IP这个词的时候, 很多时候它都会伴随这TCP, 或者是TCP/IP, 因为, 在Transport层, 最常用的协议就是TCP. 当然, 在这一层当中, 其他的一些协议, 比如说UDP协议. 跟TCP协议最大的不同是, TCP协议确保信息的到达, 而UDP不能. Application 层在这一层, 就有很多很多常用的协议了, 他们都偏向于应用, 比如说HTTP. 总结如果把这个五层协议做拟物化比较的话, 网络节点说请求的信息可以比喻成 快递. 第一层, 也就是Physical层就是运送货物的 货车; 第二层, 也就是Data Link层就是 公路, 连接着A点和B点; 第三层, 也就是Network层就是 导航仪, 用来指导货车如何从A点到B点; 第四层, 也就是Transport层就是 快递小哥, 他负责敲你的门告诉你快递到了. 第五层, 也就是Application层, 负责的就是这个货物的 包装 工作了.]]></content>
+      <categories>
+        <category>Hard Core CS</category>
+      </categories>
+      <tags>
+        <tag>Network</tag>
+        <tag>Fundemental Knowledge</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Maximum Product Subarray]]></title>
+    <url>%2F2018%2F06%2F11%2FMaximum-Product-Subarray%2F</url>
+    <content type="text"><![CDATA[152. Maximum Product Subarray Given an integer array nums, find the contiguous subarray within an array (containing at least one number) which has the largest product. 给一个数组， 求他的子序列中乘积最大的值 Example1: input: [2, 3, -2, 4] output: 6 -&gt; [2, 3] Example2: input: [-2, 0, -1] output: [0] 思路从前往后扫这个数组, 记录下 max_product和min_product.因为对于他的子序列来说, 最大的积有几种可能. 之前最大的乘积乘以一个正数 之前最小的乘积乘以一个负数 当前的数字就是最大的 最小的积也是一样的道理. Code1234567891011def max_product(nums): if not nums: return 0 res = nums[0] max_p = min_p = num[0] for i in range(1, len(nums)): tmp = min_p min_p = min(nums[i], min_p * nums[i], max_p * nums[i]) max_p = max(nums[i], tmp * nums[i], max_p * nums[i]) res = max(res, max_p) return res Example1: [2, 3, -2, 4] i = 1 min_p = min(3, 2 * 3, 2 * 3) = 3 max_p = max(3, 2, * 3, 2 * 3) = 6 res = 6 i = 2 min_p = min(-2, 6 * -2, 3 * -2) = -12 max_p = max(-2, 6 * -2, 3 * -2) = -2 res = 6 ... Example2: [-2, 0, -1] i = 1 min_p = min(0, -2 * 0, -2 * 0) = 0 max_p = max(0, -2 * 0, -2 * 0) = 0 res = 0 i = 2 min_p = min(0, -1 * 0, -1 * 0) = 0 max_p = max(0, -1 * 0, -1 * 0) = 0 res = 0 时间复杂度$O(n)$]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+        <tag>Dynamic Programming</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Extend Django User Model]]></title>
+    <url>%2F2018%2F06%2F04%2FExtend-Django-User-Model%2F</url>
+    <content type="text"><![CDATA[Django 自带的 User 类就已经帮我们实现了用户的注册和登陆的基本功能. 可是, 这个类只包含了 username, first_name, last_name, email 这4个基础字段, 且first_name, last_name, 和email字段都是非必填的. 如果我们需要User表里面有更多的字段, 那么我们可以自己来拓展 Django这个类. 源码分析123456789class User(AbstractUser): """ Users within the Django authentication system are represented by this model. Username, password and email are required. Other fields are optional. """ class Meta(AbstractUser.Meta): swappable = 'AUTH_USER_MODEL' 从源码可以看出, 自带的User继承自AbstractUser. 如果我们要添加字段或者更改字段, 也需要继承 AbstractUser. 拓展123456from django.contrib.auth.models import AbstractUserclass User(AbstractUser): # make email unique email = models.EmailField(unique=True) REQUIRED_FIELDS = ['first_name', 'last_name', 'email'] 使用模型当我们完成User表的拓展的时候, 工作并没有结束, 我们还需要告诉Django来使用我们刚刚拓展的User模型来验证登陆和注册. 在settings.py添加1AUTH_USER_MODEL = 'manager.User' 这样才算完成. EOF]]></content>
+      <categories>
+        <category>Tricks</category>
+      </categories>
+      <tags>
+        <tag>Django</tag>
+        <tag>Python</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[记账Side Project (二)]]></title>
+    <url>%2F2018%2F06%2F04%2F%E8%AE%B0%E8%B4%A6Side-Project-%E4%BA%8C%2F</url>
+    <content type="text"><![CDATA[过往回顾记账Side Project (一) 上一篇文章详细的分析了产品的需求, 这篇文章, 主要谈谈数据库应该要怎么设计. 由于我本身数据库设计的知识不是很全面, 很多时候都是属于摸着石头过河, 如果有出错, 或者设计不合理的地方, 还有望各位指正. 数据库设计User注册和登陆都属于比较基础的需求, 这方面业界也有很多成熟的设计方案. 那么这个表的设计就不用分析, 直接拿来成熟的设计, 只保留基础功能就可以了. column type id int PK email varchar(50) UQ first_name varchar(50) last_name varchar(50) password varchar(100) Income这个表用来记录每一条收入, 不管是固定收入还是意外收入, 或者理财收入, 都将作为一条单独的数据存在这个表格当中. column type id int PK user_id int FK income_type int FK name varchar(100) date date amount money note text 对于这个表, 需要采集的数据就是 name, note, amount, date 四项. 对于 income_type, 逻辑上来说, 所有需要被手动输入的收入都输入意外/一次性收入, 所以income_type的值就被确定了. 那么对于固定收入来说, 需要用户建立在另外的表格建立他们的固定收入, 每一个收入周期, 就会有一个收入条目被创建然后插入到这个表格当中. IncomeType这个主要储存收入的类型, 比如说固定收入, 意外收入, 理财收入 column type id int PK type varchar(50) PK Expenditure column type id int PK user_id int FK exp_type int FK name varchar(100) date date amount money note text ExpenditureType column type id int PK type varchar(50) PK 有这五个表的存在, “记账” 这个基本功能就可以实现了. 从简单入手, 再到复杂的功能, 一个个慢慢实现.]]></content>
+      <categories>
+        <category>thoughts</category>
+      </categories>
+      <tags>
+        <tag>side project</tag>
+        <tag>system design</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[记账Side Project (一)]]></title>
+    <url>%2F2018%2F06%2F04%2F%E8%AE%B0%E8%B4%A6Side-Project-%E4%B8%80%2F</url>
+    <content type="text"><![CDATA[想法很久之前, 我就有记账的想法, 可是当时一直因为懒, 没有对记账的这个事情上心, 久而久之, 记账这个东西就成为了我心头的一个想完成但是有一直没有完成的一个任务和想法. 现在突然再把这个东西提出来, 主要是我自己有几个痛点, 希望能够通过记账的方式解决. 第一, 虽然我现在挣的奖学金有一千多美金一个月, 但是不足以覆盖生活开支, 很惭愧, 仍然需要家里的接济. 但是, 每当我母亲问起来一个月需要接济我多少, 我常常拿不准数额, 因为确实没有对一个月的花费有一个宏观的认识. 第二, 作为一个电子产品爱好者和乐高爱好者, 支撑这些爱好是需要钱的, 在决定出手购买这些东西的时候, 时常拿捏不准当前的存款是否可以支撑我的消费. 我向往有一个类似于财务管家一样的东西, 去告诉我, 我这个月的理财收益有多少, 能够被我自由支配的有多少. 第三, 就是帮助自己建立存款目标, 为将来组建家庭时能够有一定基础. 账到底需要怎么记记账这一块东西, 不是特别复杂, 主要分成两大类. 收入 支出 收入收入有几种 固定收入 投资收益 意外收益 固定收入很好理解, 最基本的, 就是工资. 如果有房产正在出租的话, 那么房客所付的房租, 也算是固定收入. 投资收益, 顾名思义, 就是通过投资活动产生的收益. 比如说股票, 基金等等, 这个收益是允许为负的. 意外收益, 指的是一次性收入, 比如说中彩票了, 业绩奖金, 年终奖, 又或者说接了一个私活, 这都算作意外收益. 还有一个我想把他划为意外收益的是”退税”. 每年的四月份, 是报税的季节, 多交了税可以退, 少交了税需要补. 但是这个数额每年不一样, 所以还是算作意外收益比较合理. 支出支出这方面, 就相对来说复杂得多, 所以还是需要先分类. 固定支出 一般支出 生活支出 意外支出 投资支出 固定支出, 说的就是房租, 汽车保险, 还有各种服务的订阅费用, 不如说Apple Music的订阅费用, Dropbox的订阅费用, Netflix的订阅费用等等. 如果身上还有贷款的话, 那么每月的还贷也需要算成固定支出. 一般支出就覆盖了生活上所有的支出了. 这里我把它分成三大类, 生活支出, 指的是煤气水电, 伙食, 汽油等等为了生存必须的支持. 意外支出, 指的是买个包, 买个玩具, 又可能是修车等等的支出. 投资支出值得是可能会带来收益的支出, 比如说, 买了股票或者基金, 这个支出要算作投资支出. 系统设计有了上面比较清晰分析, 那么就需要来设计一下这个产品了. 收入固定收入 收入金额 收入频率 (每天, 每周, 每半月, 每月, 每季度, 每年) 初次收入时间 类型 (工资, 房租) 是否有效 备注 收入频率和初次收入时间是为了自动化记账做的准备. 投资收益由于不太清楚基金的收益到底怎么计算, 投资收益这一块暂时只有股票收益. 股票代号 持有数量 成本 投资人 (也就是用户id) 意外收益 收入金额 类型 (退税, 中奖) 收入日期 备注 支出固定支出 支出金额 支出频率 (每天, 每周, 每半月, 每月, 每季度, 每年) 初次支出时间 类型 (保险, 房租, 贷款, 订阅) 是否有效 备注 一般支出 支出金额 支出时间 类型 备注 资产管理资产这一块其实并不属于记账的内容, 但是可以通过计算的方式产生. 根据账目记录可以更好的掌握自己的财务状况. 简单来说, 资产分为4种. 不动产 现金 有价证券 债务 不动产需要用户提供数据, 现金来自于记账的计算, 债务也需要用户提供输入. 这一块的设计, 目前还没有想得特别深入. 在此抛砖引玉. 不动产 类型 (房屋, 矿产) 价值 是否有效 (是否已经出售) 备注 现金简单来说 现金 = (固定收入 + 意外收入) - 支出 债务 债务总金额 已还金额 剩余债务 债务日期 备注 明确了上面的几种资产, 一份粗略的财务报表也将差不多了. 下一篇, 我将谈一下数据库的设计]]></content>
+      <categories>
+        <category>thoughts</category>
+      </categories>
+      <tags>
+        <tag>side project</tag>
+        <tag>system design</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Range Addition]]></title>
+    <url>%2F2018%2F05%2F28%2FRange-Addition%2F</url>
+    <content type="text"><![CDATA[370. Range Addition Assume you have an array of length n initialized with all 0’s and are given k update operations.Each operation is represented as a triplet: [startIndex, endIndex, inc] which increments each element of subarray A[startIndex ... endIndex] (startIndex and endIndex inclusive) with inc.Return the modified array after all k operations were executed. 给一个length, 这是要返回的数组的长度, 初始的时候所有值为0. 还有一个n*3的数组, 每一行有3个数, 分别代表了start, end和inc. 我们需要更新我们的结果数组, 从start 到 end. 例子: length = 5, updates = [ [1, 3, 2], [2, 4, 3], [0, 2, -2] ] 初始化 [0, 0, 0, 0, 0] 更新 [1, 3], [0, 2, 2, 2, 0] 更新 [2, 4], [0, 2, 5, 5, 3] 更新 [0, 2], [-2, 0, 3, 5, 3] 思路这道题的直观写法很容以做. 就像上面的例子说的那样, 没去都去更新所有. 但是, 这样太慢了, 这样做的时间复杂度是 $O(n \cdot k)$. 根据solution的提示, 有一个时间复杂度为 $O(n + k)$ 的方法. 那就是每次只更新 start 和 end + 1 (如果在范围内的话). res[start] += inc和res[end+1] **-=** inc. 但更新都做完之后, 把res进行累加.就是要返回的结果. 还是用回上面的例子 初始化 [0, 0, 0, 0, 0] 更新 1, 4 得到 [0, 2, 0, 0, -2] 更新 2. 因为5不再范围内. 得到 [0, 2, 3, 0, -2] 更新 0, 3. 得到 [-2, 2, 3, 2, -2] 更新整个结果 [-2, 2, 3, 2, -2] [-2, 0, 3, 2, -2] [-2, 0, 3, 2, -2] [-2, 0, 3, 5, -2] [-2, 0, 3, 5, 3] Code Naive Method 12345678910def getModifiedArray(length, updates): res = [0] * length for update in updates: start = update[0] end = update[1] inc = update[2] for i in range(start, end+1): res[i] += inc return res Advanced Method 1234567891011121314def getModifiedArray(length, updates): res = [0] * length for update in updates: start = update[0] end = update[1] inc = update[2] res[start] += inc if end + 1 &lt; len(res): res[end + 1] -= inc s = 0 for i in range(len(res)): s += res[i] res[i] = s return res 时间复杂度Method 1: $O(n \cdot k)$Method 2: $O(n + k)$]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Wiggle Sort]]></title>
+    <url>%2F2018%2F05%2F28%2FWiggle-Sort%2F</url>
+    <content type="text"><![CDATA[280. Wiggle Sort Given an unsorted array nums, reorder it in-place such that nums[0] &lt;= nums[1] &gt;= nums[2] &lt;= nums[3].... 将数组in-place进行wiggle排序. Wiggle排序的意思是, nums[0] &lt;= nums[1] &gt;= nums[2] &lt;= nums[3].... 举个例子: [3,5,2,1,6,4]一种可能的Wiggle排序是[3,5,1,6,2,4] 思路 Thoughts先将原来的数组排序, 然后一头一尾重新组合, 就是Wiggle排序了.比如说 [1, 2, 3, 4, 5, 6, 7]. 这个数组的Wiggle排序就是[1, 7, 2, 6, 3, 5, 4]. 由于题目要求是in-place所以, 我们需要额外的空间去储存这个排序. First sort this array, then construct the new array with one element from the front and one element from the back. For example, [1, 2, 3, 4, 5, 6, 7], the new array should be [1, 7, 2, 6, 3, 5 , 4]. Since the requirement is in-place modification, we need extra constent space to store the sorted array. Code123456789101112def wiggleSort(nums): copy = sorted(nums) left = 0 right = len(nums) - 1 for i in range(len(nums) - 1): if i % 2 == 0: nums[i] = copy[left] left += 1 else: nums[i] = copy[right] right -= 1 时间复杂度 Time Complexity$O(nlogn)$ EOF]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Rotate Array]]></title>
+    <url>%2F2018%2F05%2F28%2FRotate-Array%2F</url>
+    <content type="text"><![CDATA[189. Rotate Array Given an array, rotate the array to the right by k steps, where k is non-negative. 给一个数组和一个整数k, 把数组往右移k位. 需要注意的是k有可能比数组的长度要大 思路首先要知道的是要移动多少位, 然后把后k位保存下来, 然后把它贴到前面去. Code123456789101112131415def rotate(nums, k): k = k % len(nums) left = nums[len(nums)-k:] i = len(nums)-k-1 j = len(nums) - 1 while i &gt;= 0: nums[j] = nums[i] i -= 1 j -= 1 i = 0 while i &lt; len(left): nums[i] = left[i] i += 1 时间复杂度$O(n)$ EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Third Maximum Number]]></title>
+    <url>%2F2018%2F05%2F28%2F414-Third-Maximum-Number%2F</url>
+    <content type="text"><![CDATA[414. Third Maximum Number Given a non-empty array of integers, return the third maximum number in this array. If it does not exist, return the maximum number. The time complexity must be in O(n). 给一个数组, 求数组内第三大的数, 如果不存在, 则返回最大的数. 题目还有一个特别的要求, 时间复杂度控制在$O(n)$, 意味着, 不能排序. 思路先把数组去重, 然后个数少于3的直接返回最大值. 然后维护一个长度为3的tops数组, 从左往右扫描, 然后个扫到的值更新到tops数组里面. Code12345678910111213141516171819202122def thirdMax(nums): nums = list(set(nums)) if len(nums) &lt; 3: return max(nums) tops = [-float('inf')] * 3 for num in nums: tops = swap(tops, num) return tops[2]def swap(nums, n): if n &gt; tops[0]: tops[2] = tops[1] tops[1] = tops[0] tops[0] = n elif n &gt; tops[1]: tops[2] = tops[1] tops[1] = n elif n &gt; tops[2]: tops[2] = n return tops]]></content>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[K-diff Pairs in an Array]]></title>
+    <url>%2F2018%2F05%2F28%2FK-diff-Pairs-in-an-Array%2F</url>
+    <content type="text"><![CDATA[532. K-diff Pairs in an Array Given an array of integers and an integer k, you need to find the number of unique k-diff pairs in the array. Here a k-diff pair is defined as an integer pair (i, j), where i and j are both numbers in the array and their absolute difference is k. 给一个数组, 返回所有的k-diff组合. 例子: [3, 1, 4, 1, 5], k = 2 =&gt; 2 k-diff组合为(1, 3), (5, 3) [1, 2, 3, 4, 5], k = 1 k-diff组合为(1, 2), (2, 3), (3, 4), (4, 5) 思路排序后从左往右扫描数组, 只看右边能组成k-diff的数字. Code123456789101112def kDiff(nums, k): nums.sort() res = set() for i in range(len(nums)): j = i + 1 while j &lt; len(nums): if abs(nums[j] - nums[i]) &gt; k: break if abs(nums[j] - nums[i]) == k: res.add((nums[i], nums[j])) j += 1 return len(res) ##时间复杂度$O(nlogn) + O(n)$ EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Shortest Unsorted Continuous Subarray]]></title>
+    <url>%2F2018%2F05%2F28%2FShortest-Unsorted-Continuous-Subarray%2F</url>
+    <content type="text"><![CDATA[581. Shortest Unsorted Continuous Subarray Given an integer array, you need to find one continuous subarray that if you only sort this subarray in ascending order, then the whole array will be sorted in ascending order, too.You need to find the shortest such subarray and output its length. 给一个数组, 返回一个最短子数组, 使这个子数组排序后, 原数组是一个升序数组. 例子: [1, 2, 3, 4, 5] =&gt; 0 因为这个数组已经是升序的 [6, 5, 4, 3, 2] =&gt; 5 因为这个数组是降序的 [2, 6, 4, 8, 10, 9, 15] =&gt; 5 因为最短的需要排序的字数组是 [6, 4, 8, 10, 9] 思路申请一个空间, 储存排序后的原数组. 然后分别从左和从右遍历数组, 遇到的第一个与原数组不同的数, 那分别就是要返回的子数组的左右边界值. ori = [2, 6, 4, 8, 10, 9, 15] sort = [2, 4, 6, 8, 9, 10, 15] l r output = r - l + 1 = 5 - 1 + 1 = 5 Code1234567891011121314151617181920def shortestUnsorted(nums): if len(nums) &lt;= 1: return 0 left = right = -1 sort = sorted(nums) if sort == nums: return 0 #left to right scan for i in range(len(nums)): if nums[i] != sort[i]: left = i break #right to left scan for j in reversed(range(len(nums))): if nums[j] != sort[j]: right = j break return right - left + 1 时间复杂度$O(nlogn)$]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Can Place Flower]]></title>
+    <url>%2F2018%2F05%2F28%2FCan-Place-Flower%2F</url>
+    <content type="text"><![CDATA[605. Can Place Flower Suppose you have a long flowerbed in which some of the plots are planted and some are not. However, flowers cannot be planted in adjacent plots - they would compete for water and both would die.Given a flowerbed (represented as an array containing 0 and 1, where 0 means empty and 1 means not empty), and a number n, return if n new flowers can be planted in it without violating the no-adjacent-flowers rule. 给一个数组, 代表花圃, 和一个数字n表示要种的画的数量. 问花圃能不能种下这么多的花 花圃有0和1组成, 0表示空位, 1表示已经有花种在那里了.如果要往一个空位里面种花, 需要满足一个条件: 该位置左右都是空的. 思路从左往右扫描, 如果有空位, 判断能否种花, 如果能种, 就种, 不能种继续扫描. 有两个地方西药注意的, 就是数组的第一位和最后一位, 他们只需要判断一边是否为空就可以了. Code1234567891011121314151617181920212223def canPlaceFlower(flowerbed, n): if n &gt; len(flowerbed)/2 + 1: return False if len(flowerbed) == 1 and flowerbed[0] == 0: return n-1&lt;=0 elif len(flowerbed) == 1: return n &lt;= 0 for i in range(len(flowerbed)): if i == 0: if flowerbed[i] == 0 and flowerbed[i+1] == 0: flowerbed[i] = 1 n -= 1 elif i == len(flowerbed)-1: if flowerbed[i] == 0 and flowerbed[i-1] == 0: flowerbed[i] = 1 n -= 1 else: if flowerbed[i] == 0 and flowerbed[i+1] == 0 and flowerbed[i-1] == 0: flowerbed[i] = 1 n -= 1 return n &lt;= 0 ##时间复杂度$O(n)$ EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Contains Duplicates]]></title>
+    <url>%2F2018%2F05%2F28%2FContains-Duplicates%2F</url>
+    <content type="text"><![CDATA[219. Contains Duplicates II Given an array of integers and an integer k, find out whether there are two distinct indices i and j in the array such that nums[i] = nums[j] and the absolute difference between i and j is at most k. 给一个数组, 看nums[i]附近的k个数里, 是否有相同的. 也就是说, 如果存在nums[i] == nums[j]和abs(j-i) &lt;= k则返回True 否则返回 False. 思路从前往后去扫描一个数组, 用一个hashtable去记住每个数组出现的index. 如果有相同的, 则看hashtable中的记录和当前的index的是否再k以内, 如果是, 就返回True. 否则更新hashtable中的值. Code12345678910def containsDuplicate(nums, k): ht = dict() for i in range(len(nums)): if nums[i] not in ht: ht[nums[i]] = i else: if i - ht[nums[i]] &lt;= k: return True ht[nums[i]] = i return False 时间复杂度$O(n)$]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+        <tag>hashtable</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Maximum Distance in Arrays]]></title>
+    <url>%2F2018%2F05%2F28%2FMaximum-distance-in-arrays%2F</url>
+    <content type="text"><![CDATA[624. Maximum Distance in Arrays Given m arrays, and each array is sorted in ascending order. Now you can pick up two integers from two different arrays (each array picks one) and calculate the distance. We define the distance between two integers a and b to be their absolute difference |a-b|. Your task is to find the maximum distance. 给一个嵌套的数组, 里面至少有两个数组, 每个数组里面至少有一个数字. 每个数组都是排序好的. 求最大的数字里头最大的差值. 需要注意的是如果从一个数组里选了最大值, 那个最小值就不能从这个数组里面选择了.例如: [ [0, 8], [2, 4] ] max distance = 8 - 2 = 6 思路这道题的思路是, 扫一遍数组, 记录下max, min和maxdiff. maxdiff 是 max - current[0] 和 current[-1] - min的较大值. Code123456789101112def maxDistance(arrays): max_val = arrays[0][-1] min_val = arrays[0][0] maxdiff = -float('inf') i = 1 while i &lt; len(arrays): maxdiff = max(maxdiff, max_val - arrays[i][0], arrays[i][-1] - min_val) max_val = max(max_val, arrays[i][-1]) min_val = min(min_val, arrays[i][0]) i += 1 return maxdiff 时间复杂度$O(n)$]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Remove Duplicates from Sorted Array]]></title>
+    <url>%2F2018%2F05%2F27%2FRemove-Duplicates-from-Sorted-Array%2F</url>
+    <content type="text"><![CDATA[26. Remove Duplicates from Sorted Array Given a sorted array nums, remove the duplicates in-place such that each element appear only once and return the new length.Do not allocate extra space for another array, you must do this by modifying the input array in-place with O(1) extra memory. 输入是一个排序好的数组, 我们需要去掉所有重复的元素, 然后返回这个数组的长度. 值得注意的是, 题目还要求: 1. 不能使用额外的空间. 2. 需要in-place修改 思路这题没有什么思路可以讲的, 非常直观. 从 index = 1开始遍历数组, 当nums[i] == nums[i-1]的时候, 把nums[i]从数组当中删去. Code12345678def removeDuplicates(nums): i = 1 while i &lt; len(nums): if nums[i] == nums[i-1]: nums.pop(i) else: i += 1 return len(nums) 时间复杂度$O(n)$]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Maximum Average Subarray I]]></title>
+    <url>%2F2018%2F05%2F27%2FMaximum-Average-Subarray-I%2F</url>
+    <content type="text"><![CDATA[643. Maximum Average Subarray I Given an array consisting of n integers, find the contiguous subarray of given length k that has the maximum average value. And you need to output the maximum average value. 意思是, 给一个长度为n的数组, 和一个值k, 求所有长度为k的字数组的最大平均值. Example: input: [1,12,-5,-6,50,3], k = 4 output: 12.75 这个例子里面, 长度为4的子串当中, 平均值最大的是 [12, -5, -6, 50] ##思路这个题, 比较简单, 很直观的方法就是, 新建一个数组, 存累加的结果. 还是上面那个例子 nums = [1, 12, -5, -6, 50, 3] sums = [1, 13, 8, 2, 52, 55] 有了这个累加的结果后, nums[0, 4]的和是sums[3], nums[1, 5]的和是sums[4] - sums[0]. 这样我们就有左右子串的和了. 那么求平均值就很容易了. Codedef maxAverage(nums, k): sums = [0] * len(nums) s = 0 for i in range(len(nums)): s += nums[i] sums[i] = s res = sums[k-1]/float(k) left = 0 right = k while right &lt; len(nums): tmp = sums[right] - sums[left] res = max(res, tmp/float(k)) left += 1 right += 1 return res 时间复杂度$O(n)$ EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>array</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[TaskScheduler]]></title>
+    <url>%2F2018%2F05%2F22%2FTaskScheduler%2F</url>
+    <content type="text"><![CDATA[621. Task Scheduler Given a char array representing tasks CPU need to do. It contains capital letters A to Z where different letters represent different tasks.Tasks could be done without original order. Each task could be done in one interval. For each interval, CPU could finish one task or just be idle.However, there is a non-negative cooling interval n that means between two same tasks, there must be at least n intervals that CPU are doing different tasks or just be idle.You need to return the least number of intervals the CPU will take to finish all the given tasks. 输入是一组任务, 和一个冷却的时间$n$. 两个相同任务之间的至少要冷却$n$. 要求返回执行完所有任务所需要最少的时间. Example 1: tasks = [A, A, A, B, B, B] n = 2 return: 8 因为使用时间最少的执行顺序是 A-&gt;B-&gt;idel-&gt;A-&gt;B-&gt;idel-&gt;A-&gt;B 思路明确的一点是, 如果只有一种任务, 他至少需要多少时间? 任务的个数 + 空闲时间 空闲时间怎么算? 任务个数 * 空闲时间 - 空闲时间. 例如 tasks = [A, A, A], n = 1, 最少需要$3\times1-1$的空闲时间. 所以要完成这个任务, 最少需要$3 + 2 = 5$ 有了这个认识, 我们可以把一组任务中的每种任务的个数统计出来, 确定了个数最多的那个种类的最少执行时间, 然后将剩下的任务安插在其中. 例如tasks = [A, A, A, B, B, B]先安排A, 得出A-&gt;idel-&gt;idel-&gt;A-&gt;idel-&gt;idel-&gt;A然后再安排B, 得出A-&gt;B-&gt;idel-&gt;A-&gt;B-&gt;idel-&gt;A-&gt;B Code12345678910111213def leastIntervals(tasks, n): helper = [0] * 128 for x in tasks: helper[ord(x)] += 1 helper = sorted(helper, reverse=True) res = helper[0] * (n+1)-n for i in range(1, len(helper)): if helper[i] == helper[0]: res += 1 else: break return max(res, sum(helper))]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+        <tag>greedy</tag>
+        <tag>queue</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Sum of Left Leaves]]></title>
+    <url>%2F2018%2F05%2F22%2FSum-of-Left-Leaves%2F</url>
+    <content type="text"><![CDATA[Sum of Left Leaves Find the sum of all left leaves in a given binary tree 输入一棵二叉树, 返回所有左叶子的和. Example: 3 / \ 9 20 / \ 15 7 其中, 左叶子为 9, 15, 所以返回 24 思路遍历二叉树, 把左叶子存下来. 那么怎么定义左叶子呢? 一句话, 当root.left不为空且root.left.left和root.left.right为空的时候, root.left就是一个左叶子 Code12345678910111213def traversal(root): res = list() if not root: return res if root.left is not None and root.left.left is None and root.left.right is None: res.append(root.left.val) res += traversal(root.left) res += traversal(root.right) return resdef SumOfLeftLeaves(root): leaves = traversal(root) return sum(leaves) 复杂度$O(n)$, $n$为二叉树节点个数. EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>tree</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Flatten Nested List Iterator]]></title>
+    <url>%2F2018%2F05%2F21%2FFlatten-Nested-List-Iterator%2F</url>
+    <content type="text"><![CDATA[341. Flatten Nested List Given a nested List of Integers, implement an iterator to flatten it. 给一个嵌套数组, 要求做一个迭代器去把这个嵌套的数组压平 Example 1: [[1, 1], 2, [1, 1]] 压平后 [1, 1, 2, 1, 1] Example 2: [1, [4, [6]]] 压平后 [1, 4, 6] 思路迭代器, 就是需要我们去完成两个函数, 一个是next(), 另外一个是hasNext(). 对于这一题, 初始化的时候应该把给输入的数组存在栈里面. 由于栈的FILO的特性, 我们需要从后往前压. 对于hasNext()函数, 我们需要判断 栈是否为空, 如果为空, 则返回False 栈顶是否是Integer, 如果是, 则返回True 把栈顶的NestedList取出, 从后往前压入栈, 然后重复第一步 对于next()函数, 由于hasNext()保证了栈顶一定是Integer, 所以直接返回就可以了 Code123456789101112131415161718192021222324#class NestedInteger(object):# def isInteger(self):# def getInteger(self):# def getList(self):class NestedIterator(object): def __init__(self, nestedList): self.stack = list() for i in reversed(range(len(nestedList))): self.stack.append(nestedList[i]) def next(self): a = self.stack[-1].getInteger() self.stack.pop() return a def hasNext(self): while len(self.stack) != 0: if self.stack[-1].isInteger(): return True cur = self.stack[-1].getList() self.stack.pop() for i in reversed(range(len(cur))): self.stack.append(cur[i]) return False EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>medium</tag>
+        <tag>stack</tag>
+        <tag>design</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Number of Longest Increase Subsequence]]></title>
+    <url>%2F2018%2F05%2F21%2FNumber-of-Longest-Increase-Subsequence%2F</url>
+    <content type="text"><![CDATA[678. Number of Longest Increasing Subsequence Given a unsorted array of intergers, find the number of longest increasing subsequence. 给一个数组返回最长递增字串的个数 例子1: [1, 3, 5, 4, 7] -&gt; 2 最长的两个递增字串是 [1, 3, 4, 7], [1, 3, 5, 7] 例子2: [2, 2, 2, 2, 2] -&gt; 5 最长递增字串是1, 这样的字串有5个 思路一开始想用贪心算法来做, 但是没做出来 :(所以得换个思路, 这道题的正确技术是动态规划, 那么要到底怎么规划呢? 对于这道题, 有两个点需要注意. 最长字串是什么 有多少个这样长度的最长字串 所以, 一开始, 我们要建立两个数组, most_len 和 count. most_len most_len[k] 表示以nums[k]为结尾的最长递增子串的长度. count[k] 表示以nums[k]为结尾的最长递增子串的个数. 对于每一个nums[l], 遍历nums[0]到nums[i-1], 找到比nums[i]小且长度最长的nums[k], 就可以得出以nums[i]为末尾的最长递增子串的长度. 同时,以nums[i]结尾的最长递增子串的个数应该等于nums[j]中, 比nums[j]小且长度最长的所有nums[k]的最长递增子串的个数的和 说了一段这么绕的话, 要理解, 需要实际例子来帮助. nums = [1, 3, 5, 4, 7]首先要初始化两个数组, 用来记录长度和个数. most_len = [1, 1, 1, 1, 1]count = [1, 1, 1, 1, 1] 然后从$i=1$开始遍历: nums[i] = 3, 比3小只有1, 所以 most_len[i] = most_len[0]+1 = 2, count[i] = count[0] = 1 nums[i] = 5, 比5小且最长的是3, 所以most_len[i] = most_len[1]+1 = 3, count[i] = count[1] = 1 nums[i] = 4, 比4小且最长的是3, 所以most_len[i] = most_len[1]+1=3, count[i] = count[1] = 1 nums[i] = 7, 比7小最最长的是5和4, 所以most_len[i] = most_len[2]+1=4, count[i] = count[2] + count[3] = 2 遍历完后, 结果是most_len = [1, 2, 3, 3, 4], count = [1, 1, 1, 1, 2] Code123456789101112131415161718192021def findNumberOfLIS(nums): most_len = [1] * len(nums) count = most_len maxLen = 1 i = 0 res = 0 for i in range(1, len(nums)): for j in range(i): if nums[j] &lt; nums[i]: if most_len[j] + 1 &gt; most_len[i]: most_len[i] = most_len[j] + 1 count[i] = count[j] elif most_len[j] + 1 == most_len[i]: count[i] += count[j] maxLen = max(maxLen, most_len[i]) for i in range(len(nums)): if maxLen == most_len[i]: res += count[i] return res 复杂度$O(n^2)$, $n$为输入数组的长度 EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>medium</tag>
+        <tag>Dynamic Programming</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Insert Interval]]></title>
+    <url>%2F2018%2F05%2F21%2FInsert-Interval%2F</url>
+    <content type="text"><![CDATA[Insert Interval Given a set of non-overlapping intervlas, insert a new interval into intervals(merge if necessary) 给一个组特殊的数据结构interval和一个目标interval, 每个interval有start和end. 输入的一组interval没有重合, 要求把新的interval插入到原来的那一组interval当中, 如果有需要合并的话, 对interval进行合并 例如:输入是 [[1, 3], [6, 9]] 和 [2, 5], 那么我们需要返回[[1, 5], [6, 9]] 思路首先可以明确的是, 要插入一个新的interval, 有下面五种可能 跟原来的没有任何重叠, 不需要合并 start落在其中一个interval当中, 但是end不在任何interval当中, 需要改变原来interval的end值 [[1, 3], [6, 9]] 和 [2, 5]. 这里需要把[1, 3]扩大成[1, 5] end落在其中一个interval当中, 但是start不再任何interval当中, 需要改变原来interval的start值 [[2, 5], [6, 9]] 和 [1, 4]. 这里需要把[2, 5]扩大成[1, 5] start落在其中一个interval当中, end落在另外一个interval当中, 需要把多个interval进行合并. [[1, 3], [6, 9]] 和 [2, 7]. 这里需要把[1, 3], [6, 9]合并, 变成 [1, 6] start和end都落在同一个interval当中, 那么什么也不用改. 清楚了上面的规则之后, 我们可以把工作简化成合并interval. 因为作为输入的一组interval是经过排序的, 把newInterval插入后也按照interval的start值进行排序. 比如说, [[1, 3], [6, 9]], 插入[2, 4]之后, 变成[[1, 3], [2, 4], [6, 9]]. 然后我们对这一组interval按照上面说的规则进行合并, 就是我们最终的答案. Code12345678910111213141516171819def merge(interval): i = 1 while i &lt; len(intervals): prev = intervals[i-1] cur = intervals[i] if cur.start &lt;= prev.end: if cur.end &gt; prev.end: prev.end = cur.end intervals.pop(i) else: intervals.pop(i) else: i += 1 return intervalsdef insert(intervals, newInterval): intervals.append(newInterval) intervals.sort(key=lambda x:x.start) return merge(intervals) 复杂度因为要进行排序, 所以bets case: $O(n)$, average case: $O(nlogn)$, worst case: $O(nlogn)$. EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>hard</tag>
+        <tag>sort</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Text Justification]]></title>
+    <url>%2F2018%2F05%2F21%2FText-Justification%2F</url>
+    <content type="text"><![CDATA[68. Text Justification Given an array of words and a width maxWidth, format the text such that each line as exactly maxWidth characters and is fully (left and right) justified. 题目的意思是, 给一个数组, 数组里面有$n$个单词, 把这些单词按照maxWidth行存放. 每一行的两端要对齐.需要注意的是 单词的顺序不能改变 如果一行之后一个单词, 那么这个单词要左对齐 如果空格不能均匀分布在所有间隔当中, 则左边的空格需要比右边的空格多 每行要尽可能多的放单词 思路其实这类型的题目没有什么精巧的算法可以做. 它的难点在于, 要处理的corner case太多, 比较繁琐. 对于这道题目, 几个需要解决的地方如下: 一行要放多少单词? 每一行单词的总长度加上最少空格数量应当小于等于maxWidth 知道每一行的单词数量空格需要怎么分配? 每一行的空格数量是maxWidth减去该行单词的总长度 每一行可以填空格的地方是单词数量-1 多余的空格优先添加到左边单词的间隔当中 Code12345678910111213141516171819def fullJustify(words, maxWidth): start = end = 0 res, curLen = list(), 0 for i, word in enumerate(words): if len(word) + curLen + end - start &gt; maxWidth: if end - start == 1: res.append(words[start] + ' ' * (maxWidth - curLen)) else: total_space = maxWidth - curLen space, extra = divmod(total_space, end - start - 1) for j in range(extra): words[start + j] = ' ' res.append((' ' * space).join(words[start:end])) curLen = 0 start = end = i end += 1 curLen += len(word) res.append(' '.join(words[start:end]) + ' ' * (maxWidth - curLen - (end - start - 1))) return res EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>hard</tag>
+        <tag>string</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Increasing Triplet Subsequence]]></title>
+    <url>%2F2018%2F05%2F20%2FIncreasing-Triplet-Subsequence%2F</url>
+    <content type="text"><![CDATA[334. Increasing Triplet Subsequence Given an unsorted array return whether an increasing subsequence of length 3 exists or not in the array. 题目的意思是, 给一个未排序的数组, 看是否存在 $arr[i] &lt; arr[j] &lt; arr[k]$. 在这里需要注意的是, $i &lt; j &lt; k$ 但是$i, j, k$ 不需要是连续的. 例子:[1, 2, 3, 4, 5] -&gt; true[5, 4, 3, 2, 1] -&gt; false[5, 1, 5, 2, 0, 3] -&gt;true 思路首先, 这道题可以用递归的方法求. 即固定第一个数, 然后看剩下的有没有大于这个数的存在的. 这是暴力解法. 时间复杂度是$O(n^3)$. 这样的时间复杂度显然是不可以接受的. 根据题目的提示, 希望答案可以做到线性, 就是$O(n)$的时间复杂度. 那么我们就要从这个方向去努力. 意味着, 扫描一次就要求给出结果. 在这样的要求下, 如果我们在迭代过程中记住了扫过的数字的最小和次小, 那么当当前的数字比最小和次小都大的时候, 我们就可以返回true了. 首先, 我们要初始化两个变量, min和mid. 然后开始遍历数组. 当当前数字比最小要小, 那么把值赋给mid. 如果比min大, 比mid小, 那么赋值给mid. 这样, 我们可以确保 min总是被mid小. 那么, 当当前数字比min和mid都大的时候, 就返回true Code1234567891011def increasingTriplet(nums): _min = float('inf') mid = min for n in nums: if n &lt;= _min: _min = n elif n &lt;= mid: mid = n else: return True return False 复杂度$O(n)$, $n$为输入数组的长度 EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Two Sum IV - Input is a BST]]></title>
+    <url>%2F2018%2F05%2F20%2FTwo-Sum-IV-Input-is-a-BST%2F</url>
+    <content type="text"><![CDATA[653. Two Sum IV - Input is a BST Given a Binary Search Tree and a target number, return true if there exist two elements in the BST such that their sum is equal to the given target. 这是经典题Two Sum的变形, 于经典题不同的是, 这个输入从数组, 换成了二叉搜索树. 但是, 我们还是可以按照经典题的做法取解这道题. 思路由于这道题的输入是一个二叉搜索树, 所以我们可以利用二叉搜索树的一些特点来帮助我们解决这道题. 大家都知道二叉搜索树的最重要的特点, 就是左子树永远比根节点小, 右子树永远比根节点要大. 那么利用这个特点, 中序遍历二叉搜索树, 我们就可以得到一个升序的数组. 这就可以用双指针的方法来做了. 定义一个左指针, 指向0. 一个右指针, 指向末尾 当左指针和右指针的和等于target的时候, 返回true 当左指针和右指针的和小于target的时候, 我们要把左指针往右挪一位 相反的, 我们要把右指针往左挪一位 当右指针小于等于左指针的时候, 返回false Code12345678910111213141516171819202122232425def inorder(root): res = list() if not root: return res res += self.inorder(root.left) res += [root.val] res += self.inorder(root.right) return resdef twoSum(root, target): if not root: return False res = inorder(root) left = 0 right = len(root)-1 while left &lt; right: if res[left] + res[right] == target: return True if res[left] + res[right] &lt; k: left += 1 else: right -= 1 return False 复杂度$O(n)$, 因为我们需要遍历这个数, $n$是这棵树的节点数 EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>tree</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Word Search]]></title>
+    <url>%2F2018%2F05%2F20%2FWord-Search%2F</url>
+    <content type="text"><![CDATA[79. Word Search Given a 2D board and a word, find if the word exists in the grid.The word can be constructed from letters of sequentially adjacent cell, where “adjacent” cells are those horizontally or vertically neighboring. The same letter cell may not used more than once. 题目的意思是, 给一个2d的数组, 和一个字符串, 要求返回数组里面是否可以由相邻的字母组成这个字符串.例子如下: [ [A, B, C, E] [S, F, C, S] [A, D, E, E] ] word = ABCCED -&gt; true ABCCED 可以由 (0, 0) -&gt; (0, 1) -&gt; (0, 2) -&gt; (1, 2) -&gt; (2, 2) -&gt; (2, 1) 组成. 思路通常来说, 遇到2d数组找东西的题目, 脑海里面首先出现3种思路, DFS, BFS 或者 DP. 然后再分析哪一种更合适. 就这道题目来说, 首先想到的解法是DFS. 从(0, 0)开始, 到(m, n). 如果当前数组里面的字符跟目标字符一样, 那么用递归的方法搜索当前位置的上, 下, 左, 右看是否有合适的字符. 这里需要注意一点, 同一个点的字符不能使用两次, 所以我们还需要额外再维护一个数组来记录当前的点是否被使用过. 有了以上的思路, 再结合DFS的模板, 稍作修改, 就可以得到这道题的解法. Code12345678910111213141516171819202122232425262728293031323334def exist(board, word): if not word: return False for i in range(len(board)): for j in range(len(board[0])): if board[i][j] == word[0]: if self.dfs(board, word, i, j, []): return True return Falsedef dfs(board, word, x, y, visited): if len(word) == 0: return False if (x, y) in visited: return False if x &lt; 0 or x &gt;= len(board) or y &lt; 0 or y &gt;= len(board[0]): return False if board[x][y] != word[0]: return False else: visited.append((x, y)) up = self.dfs(board, word[1:], x+1, y, visited) down = self.dfs(board, word[1:], x-1, y, visited) left = self.dfs(board, word[1:], x, y-1, visited) right = self.dfs(board.word[1:], x, y+1, visited) if not (up or down or left or right): visited.pop() return False return True 复杂度$O(n \cdot m)$, m为2d数组的行数, n为2d数组的列数 EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+        <tag>search</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Product of Array Except Self]]></title>
+    <url>%2F2018%2F05%2F20%2FProduct-of-Array-Except-Self%2F</url>
+    <content type="text"><![CDATA[238. Product of Array Except Given an array nums of $n$ integers where $n&gt;1$, return an array output such that output[i] is equal to the product of all the elemetns of nums except nums[i] 题目说的是, 给一个array, 要求返回另外一个数组. 要求是, 返回的数组里面的是原数组其他数的乘积.比如说:[1, 2, 3, 4]是输入, 那么输出是 [24, 12, 8, 6]. 因为 $24 = 2 \times 3 \times 4$, $12 = 1 \times 3 \times 4$. 思路要解这道题, 可以运用两个指针. 从前往后扫, 得出 $0$ 到 $i-1$ 的乘积. 从后往前扫, 得出 $i+1$ 到 最后一位的乘积. 然后将两次扫到的结果相乘. 这里的输入还是 [1, 2, 3, 4].首先, 从前往后扫. 得出 f = [1, 1, 2, 6]. 然后再从后往前扫, 得出 b =[24, 12, 4, 1]. 然后将两个数组相乘, 就是题目要求的结果. 仔细看两次的扫描结果, 很容易发现, 当$i=2$的时候, f[2] = nums[0] * nums[1], b[2] = nums[3] * 1. 他们相乘的结果刚好是 nums[0] * nums[1] * nums[3]. Code1234567891011def productExceptSelf(nums): a = len(nums) * [1] b = len(nums) * [1] for i in range(1, len(nums)): a[i] = nums[i-1] * a[i-1] for i in reversed(range(len(nums)-1)): b[i] = nums[i+1] * b[i+1] return [i*j for i,j in zip(a,b)] EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>array</tag>
+        <tag>medium</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[Add Binary]]></title>
+    <url>%2F2018%2F05%2F20%2FAdd-Binary%2F</url>
+    <content type="text"><![CDATA[67. Add Binary这道题是一道简单题, 真的很简单.首先来看题目 Given two binary strings, return their sum (also a binary string).The input strings are both non-empty and contains only characters 1 or 0. 意思就是, 给两个二进制的数, 返回他们相加的和. 例子: Input a = &quot;11&quot;, b = &quot;1&quot; Output: &quot;100&quot; 思路既然做加法, 我们就从最右边的一位开始加. 二进制的加法很简单, 每一位只有两种可能, 要么是0, 要么是1. 同样的, 进位也只有这两种可能. 有了这个共识, 思路就出来了.从最右开始, 两个数相加, 取跟2取模运算的结果作为答案, 如果两数相加的和大于1, 那么进位取1. 然后同时往左挪一位. Code12345678910111213141516171819202122232425262728293031323334353637383940def addBianry(a, b): res = list() a = a[::-1] b = b[::-1] i = j = 0 carry = 0 while i &lt; len(a) and j &lt; len(b): val = int(a[i]) + int(b[j]) + carry carry = 0 if val &gt; 1: carry = 1 res.apend(str(val%2)) else: res.append(str(val)) i += 1 j += 1 while i &lt; len(a): val = int(a[i]) + carry carry = 0 if val &gt; 1: carry = 1 res.append(str(val % 2)) else: res.append(str(val)) i += 1 while j &lt; len(b): val = int(b[j]) + carry carry = 0 if val &gt; 1: carry = 1 res.append(str(val % 2)) else: res.append(str(val)) j += 1 if carry != 0: res.append("1") return "".join(res)[::-1] 需要注意的地方是, 在返回结果之前, 需要看一下进位是否等于0. 如果不等于0, 需要最前面加一个1.这道题的时间复杂度是 $O(n)$ EOF]]></content>
+      <categories>
+        <category>interview questions</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>easy</tag>
+        <tag>math</tag>
+        <tag>string</tag>
+      </tags>
+  </entry>
+</search>
