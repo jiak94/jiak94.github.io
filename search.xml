@@ -3,7 +3,7 @@
   <entry>
     <title><![CDATA[全村的希望]]></title>
     <url>%2F2018%2F12%2F20%2F%E5%85%A8%E6%9D%91%E7%9A%84%E5%B8%8C%E6%9C%9B%2F</url>
-    <content type="text"><![CDATA[##全村的希望 这是一个在面试的时候遇到的问题. 题目描述是这样的. 输入是一个村子的人. 编号 到 `n-1`. 有一个函数, 叫`knows(a, b)`, 用来检测村民`a`是否认识村民`b` 目标是在村民里找到一个&quot;全村的希望&quot; 如果要作为&quot;全村的希望&quot;, 那么他必须满足: 1. 全村里的人都认识他 2. 他不认识村里的任何一个人 ##思路 首先, 这个题肯定是有暴力的解法的. 那就是, 如果一个人不认识村里任何的一个人, 那么这个人就有可能是”全村的希望”. 把”全村的希望”的候选人都拿到之后, 再判断他是不是全村的希望. 12345678910111213141516171819202122232425def hope_of_village(n): candidate_set = list() for i in range(n): candidate = True for j in range(n): if i == j: continue if knows(i, j): candidate = False break if candidate: candidate_set.append(i) for person in candidate_set: hov = True for i in range(n): if i == person: continue if knows(i, person) == False: hov = False break if hov: return person return None 问题来了, 这个做法虽然能做出来这个题目, 但是时间复杂度是$O(n^2)$. 这不是一个可以接受的时间复杂度. ##改进1首先, 解决这个题目最优的时间复杂度是多少? 是$O(n)$. 那么我们就可以朝着这个方向去努力把问题实现. 关于村民a和村民b的关系, 可以通过knows这个API进行判断. 从结果当中, 可以一得出两个结论: 当knows(a, b)等于False的时候, b不可能是全村的希望. 当knows(a, b)等于True的时候, a不可能是全村的希望. 换句话说, 每判断一次knows, 至少可以排除一个全村的希望候选人. 直到剩下最后一个的时候, 再去判断他是否属于全村的希望. 12345678910111213141516def hope_of_village(n): i, j = 0, 1 while j &lt; n: if knows(i, j): i += 1 if i == j: j += 1 else: j +=1 for person in range(n): if person == i: continue if knows(person, i) == False or knows(i, person): return None return i 通过这个方法, 我们把判断的数量大大的缩减了. 现在最坏的情况是复杂度是$O(2n)$. ##改进2为了实现真正意义上的$O(n)$的复杂度, 我们需要把算法再修改一下, 做到更精简. 那么这个方法就是贪心算法(greedy algorithm). 我们可以先假设0是我们的要找的全村的希望, 一旦0的候选资格被排除了, 我们立即选择下一个有资格的村民充当希望候选人. 最后再检查一边全村, 确定他的全村的希望资格. 12345678910def hope_of_village(n): hov = 0 for i in range(n): if hov != i and knows(hov, i): hov = i for i in range(n): if hov != i and (knows(hov, i) or knows(i, hov) == False): return None return hov 这样我们就实现了真正的时间复杂度为$O(n)$的算法来寻找全村的希望. ##EOF]]></content>
+    <content type="text"><![CDATA[全村的希望这是一个在面试的时候遇到的问题. 题目描述是这样的. 输入是一个村子的人. 编号 到 `n-1`. 有一个函数, 叫`knows(a, b)`, 用来检测村民`a`是否认识村民`b` 目标是在村民里找到一个&quot;全村的希望&quot; 如果要作为&quot;全村的希望&quot;, 那么他必须满足: 1. 全村里的人都认识他 2. 他不认识村里的任何一个人 思路首先, 这个题肯定是有暴力的解法的. 那就是, 如果一个人不认识村里任何的一个人, 那么这个人就有可能是”全村的希望”. 把”全村的希望”的候选人都拿到之后, 再判断他是不是全村的希望. 12345678910111213141516171819202122232425def hope_of_village(n): candidate_set = list() for i in range(n): candidate = True for j in range(n): if i == j: continue if knows(i, j): candidate = False break if candidate: candidate_set.append(i) for person in candidate_set: hov = True for i in range(n): if i == person: continue if knows(i, person) == False: hov = False break if hov: return person return None 问题来了, 这个做法虽然能做出来这个题目, 但是时间复杂度是$O(n^2)$. 这不是一个可以接受的时间复杂度. 改进1首先, 解决这个题目最优的时间复杂度是多少? 是$O(n)$. 那么我们就可以朝着这个方向去努力把问题实现. 关于村民a和村民b的关系, 可以通过knows这个API进行判断. 从结果当中, 可以一得出两个结论: 当knows(a, b)等于False的时候, b不可能是全村的希望. 当knows(a, b)等于True的时候, a不可能是全村的希望. 换句话说, 每判断一次knows, 至少可以排除一个全村的希望候选人. 直到剩下最后一个的时候, 再去判断他是否属于全村的希望. 12345678910111213141516def hope_of_village(n): i, j = 0, 1 while j &lt; n: if knows(i, j): i += 1 if i == j: j += 1 else: j +=1 for person in range(n): if person == i: continue if knows(person, i) == False or knows(i, person): return None return i 通过这个方法, 我们把判断的数量大大的缩减了. 现在最坏的情况是复杂度是$O(2n)$. 改进2为了实现真正意义上的$O(n)$的复杂度, 我们需要把算法再修改一下, 做到更精简. 那么这个方法就是贪心算法(greedy algorithm). 我们可以先假设0是我们的要找的全村的希望, 一旦0的候选资格被排除了, 我们立即选择下一个有资格的村民充当希望候选人. 最后再检查一边全村, 确定他的全村的希望资格. 12345678910def hope_of_village(n): hov = 0 for i in range(n): if hov != i and knows(hov, i): hov = i for i in range(n): if hov != i and (knows(hov, i) or knows(i, hov) == False): return None return hov 这样我们就实现了真正的时间复杂度为$O(n)$的算法来寻找全村的希望. EOF]]></content>
       <categories>
         <category>interview questions</category>
       </categories>
@@ -150,8 +150,8 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
         <tag>Dynamic Programming</tag>
       </tags>
   </entry>
@@ -200,8 +200,8 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
       </tags>
   </entry>
   <entry>
@@ -210,8 +210,8 @@
     <content type="text"><![CDATA[280. Wiggle Sort Given an unsorted array nums, reorder it in-place such that nums[0] &lt;= nums[1] &gt;= nums[2] &lt;= nums[3].... 将数组in-place进行wiggle排序. Wiggle排序的意思是, nums[0] &lt;= nums[1] &gt;= nums[2] &lt;= nums[3].... 举个例子: [3,5,2,1,6,4]一种可能的Wiggle排序是[3,5,1,6,2,4] 思路 Thoughts先将原来的数组排序, 然后一头一尾重新组合, 就是Wiggle排序了.比如说 [1, 2, 3, 4, 5, 6, 7]. 这个数组的Wiggle排序就是[1, 7, 2, 6, 3, 5, 4]. 由于题目要求是in-place所以, 我们需要额外的空间去储存这个排序. First sort this array, then construct the new array with one element from the front and one element from the back. For example, [1, 2, 3, 4, 5, 6, 7], the new array should be [1, 7, 2, 6, 3, 5 , 4]. Since the requirement is in-place modification, we need extra constent space to store the sorted array. Code123456789101112def wiggleSort(nums): copy = sorted(nums) left = 0 right = len(nums) - 1 for i in range(len(nums) - 1): if i % 2 == 0: nums[i] = copy[left] left += 1 else: nums[i] = copy[right] right -= 1 时间复杂度 Time Complexity$O(nlogn)$ EOF]]></content>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
       </tags>
   </entry>
   <entry>
@@ -338,8 +338,8 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
         <tag>greedy</tag>
         <tag>queue</tag>
       </tags>
@@ -420,8 +420,8 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
       </tags>
   </entry>
   <entry>
@@ -446,8 +446,8 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
         <tag>search</tag>
       </tags>
   </entry>
@@ -460,8 +460,8 @@
       </categories>
       <tags>
         <tag>leetcode</tag>
-        <tag>medium</tag>
         <tag>array</tag>
+        <tag>medium</tag>
       </tags>
   </entry>
   <entry>
