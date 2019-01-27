@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="en">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Python2 和 Python3最近在面试, 遇到了几个同样的问题, 就是 “python2 和 python3 具体有哪些区别”? 遇到这个问题的时候, 我每次都懵逼, 因为确实除了语法糖以外的区别, 我一个都说不出来. 所以回来之后查了一下资料, 总结出几个主要的区别, 记录下来.">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python2 vs Python3">
+<meta property="og:url" content="https://jiakuan.xyz/2019/01/28/Python2-vs-Python3/index.html">
+<meta property="og:site_name" content="Memory Allocation">
+<meta property="og:description" content="Python2 和 Python3最近在面试, 遇到了几个同样的问题, 就是 “python2 和 python3 具体有哪些区别”? 遇到这个问题的时候, 我每次都懵逼, 因为确实除了语法糖以外的区别, 我一个都说不出来. 所以回来之后查了一下资料, 总结出几个主要的区别, 记录下来.">
+<meta property="og:locale" content="en">
+<meta property="og:updated_time" content="2019-01-27T17:17:11.161Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python2 vs Python3">
+<meta name="twitter:description" content="Python2 和 Python3最近在面试, 遇到了几个同样的问题, 就是 “python2 和 python3 具体有哪些区别”? 遇到这个问题的时候, 我每次都懵逼, 因为确实除了语法糖以外的区别, 我一个都说不出来. 所以回来之后查了一下资料, 总结出几个主要的区别, 记录下来.">
+
+
+
+
+
+
+  <link rel="canonical" href="https://jiakuan.xyz/2019/01/28/Python2-vs-Python3/">
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Python2 vs Python3 | Memory Allocation</title>
+  
+
+
+
+
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-119582110-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-119582110-1');
+</script>
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="en">
+
+  
+  
+    
+  
+
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Memory Allocation</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br>Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>Tags</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br>Categories</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>Archives</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-commonweal">
+    <a href="/404" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-heartbeat"></i> <br>Commonweal 404</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>Search</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="Searching..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://jiakuan.xyz/2019/01/28/Python2-vs-Python3/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jiakuan Li">
+      <meta itemprop="description" content="雷霆雨露，俱是天恩">
+      <meta itemprop="image" content="/images/avatar.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Memory Allocation">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">Python2 vs Python3
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2019-01-28 01:17:07" itemprop="dateCreated datePublished" datetime="2019-01-28T01:17:07-05:00">2019-01-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Modified: 2019-01-27 12:17:11" itemprop="dateModified" datetime="2019-01-27T12:17:11-05:00">2019-01-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Hard-Core-CS/" itemprop="url" rel="index"><span itemprop="name">Hard Core CS</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/01/28/Python2-vs-Python3/#comments" itemprop="discussionUrl">
+                
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2019/01/28/Python2-vs-Python3/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             Views:  
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Python2-和-Python3"><a href="#Python2-和-Python3" class="headerlink" title="Python2 和 Python3"></a>Python2 和 Python3</h2><p>最近在面试, 遇到了几个同样的问题, 就是 “python2 和 python3 具体有哪些区别”? 遇到这个问题的时候, 我每次都懵逼, 因为确实除了语法糖以外的区别, 我一个都说不出来. 所以回来之后查了一下资料, 总结出几个主要的区别, 记录下来.</p>
+<a id="more"></a>
+<h2 id="“future”-模块"><a href="#“future”-模块" class="headerlink" title="“future” 模块"></a>“future” 模块</h2><p>python3 引入了一些python2 没有的关键字和功能, 如果需要在python2中使用这些功能, 就需要导入<code>__future__</code>模块. 举个例子, 在python3中<code>/</code>是返回一个浮点数, 但是在python2中, 除法操作返回的是一个整数. 如果要在python2中使用python3的除法功能, 就需要引入 <code>__future__</code>模块来支持.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">python <span class="number">2.7</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">1</span> / <span class="number">2</span></span><br><span class="line"><span class="number">0</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">1.0</span> / <span class="number">2.0</span></span><br><span class="line"><span class="number">0.5</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> __future__ <span class="keyword">import</span> division</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">1</span> / <span class="number">2</span></span><br><span class="line"><span class="number">0.5</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">1.0</span> / <span class="number">2.0</span></span><br><span class="line"><span class="number">0.5</span></span><br></pre></td></tr></table></figure>
+<h2 id="“print”-语法糖"><a href="#“print”-语法糖" class="headerlink" title="“print” 语法糖"></a>“print” 语法糖</h2><p>在python2的语法当中, 如果需要在屏幕上打印的时候, 仅仅需要<code>pring &quot;something&quot;</code>. 但是来到python3, 这个函数被<code>print()</code>替代了.</p>
+<h3 id="python2"><a href="#python2" class="headerlink" title="python2"></a>python2</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> <span class="string">'Python'</span>, python_version()</span><br><span class="line"><span class="keyword">print</span> <span class="string">'Hello, World!'</span></span><br><span class="line"><span class="keyword">print</span> (<span class="string">"Hello, World!"</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"text"</span>, ; <span class="keyword">print</span> <span class="string">'print more text on the same line!'</span></span><br></pre></td></tr></table></figure>
+<p>输出<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Python <span class="number">2.7</span><span class="number">.6</span></span><br><span class="line">Hello, World!</span><br><span class="line">Hello, World!</span><br><span class="line"><span class="built_in">text</span> print more <span class="built_in">text</span> <span class="keyword">on</span> <span class="keyword">the</span> same line</span><br></pre></td></tr></table></figure></p>
+<h3 id="python3"><a href="#python3" class="headerlink" title="python3"></a>python3</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'Python'</span>, python_version())</span><br><span class="line">print(<span class="string">'Hello, World!'</span>)</span><br><span class="line">print(<span class="string">'Some text,'</span>, end=<span class="string">""</span>)</span><br><span class="line">print(<span class="string">' print more text on the same line'</span>)</span><br></pre></td></tr></table></figure>
+<p>输出<br><figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Python <span class="number">3.4</span><span class="number">.1</span></span><br><span class="line">Hello, World!</span><br><span class="line"><span class="keyword">some</span> <span class="built_in">text</span>, print more <span class="built_in">text</span> <span class="keyword">on</span> <span class="keyword">the</span> same line</span><br></pre></td></tr></table></figure></p>
+<h3 id="整数除法"><a href="#整数除法" class="headerlink" title="整数除法"></a>整数除法</h3><p>整数除法对于python2到python3转换是一个大坑</p>
+<h4 id="python2-1"><a href="#python2-1" class="headerlink" title="python2"></a>python2</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> <span class="string">'Python'</span>, python_version()</span><br><span class="line"><span class="keyword">print</span> <span class="string">'3/2 = '</span>, <span class="number">3</span>/<span class="number">2</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'3//2 = '</span>, <span class="number">3</span>//<span class="number">2</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'3/2.0 = '</span>, <span class="number">3</span>/<span class="number">2.0</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'3//2.0 = '</span>, <span class="number">3</span> //<span class="number">2.0</span></span><br></pre></td></tr></table></figure>
+<p>输出<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Python <span class="number">2.7</span><span class="number">.6</span></span><br><span class="line"><span class="number">3</span> / <span class="number">2</span> = <span class="number">1</span></span><br><span class="line"><span class="number">3</span> <span class="comment">// 2 = 1</span></span><br><span class="line"><span class="number">3</span> / <span class="number">2.0</span> = <span class="number">1.5</span></span><br><span class="line"><span class="number">3</span> <span class="comment">// 2.0 = 1.0</span></span><br></pre></td></tr></table></figure></p>
+<h4 id="python3-1"><a href="#python3-1" class="headerlink" title="python3"></a>python3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">'Python'</span>, python_version())</span><br><span class="line">print(<span class="string">'3/2 = '</span>, <span class="number">3</span>/<span class="number">2</span>)</span><br><span class="line">print(<span class="string">'3//2 = '</span>, <span class="number">3</span>//<span class="number">2</span>)</span><br><span class="line">print(<span class="string">'3/2.0 = '</span>, <span class="number">3</span>/<span class="number">2.0</span>)</span><br><span class="line">print(<span class="string">'3//2.0 = '</span>, <span class="number">3</span>//<span class="number">2.0</span>)</span><br></pre></td></tr></table></figure>
+<p>输出<br><figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Python <span class="number">3.4</span><span class="number">.1</span></span><br><span class="line"><span class="number">3</span> / <span class="number">2</span> = <span class="number">1.5</span></span><br><span class="line"><span class="number">3</span> <span class="comment">// 2 = 1</span></span><br><span class="line"><span class="number">3</span> / <span class="number">2.0</span> = <span class="number">1.5</span></span><br><span class="line"><span class="number">3</span> <span class="comment">// 2.0 = 1.0</span></span><br></pre></td></tr></table></figure></p>
+<h3 id="Unicode"><a href="#Unicode" class="headerlink" title="Unicode"></a>Unicode</h3><p>python2 有ASCII <code>str()</code>类型, 跟<code>unicode()</code>类型并不一样, 而且在python2中没有<code>byte</code>类型.<br>python3 有utf-8 的 <code>str()</code>类型. 同时python3也用<code>byte</code> 和 <code>bytearray</code></p>
+<h4 id="Python2"><a href="#Python2" class="headerlink" title="Python2"></a>Python2</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;<span class="keyword">print</span> <span class="string">'Python'</span>, python_version()</span><br><span class="line">Python <span class="number">2.7</span><span class="number">.6</span></span><br><span class="line">&gt;&gt;&gt;type(unicode(<span class="string">'this is like py3 str type'</span>))</span><br><span class="line">&lt;type <span class="string">'unicode'</span>&gt;</span><br><span class="line">&gt;&gt;&gt;type(<span class="string">b'byte type does not exist'</span>)</span><br><span class="line">&lt;type <span class="string">'str'</span>&gt;</span><br><span class="line">&gt;&gt;&gt;type(bytearray(<span class="string">b'bytearray oddly exist'</span>))</span><br><span class="line">&lt;type <span class="string">'bytearray'</span>&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="Python3"><a href="#Python3" class="headerlink" title="Python3"></a>Python3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;print(<span class="string">'Python'</span>, python_version())</span><br><span class="line">Python <span class="number">3.4</span><span class="number">.1</span></span><br><span class="line">&gt;&gt;&gt;print(<span class="string">'strings are utf-8 \u03BCnico\u0394é!'</span>)</span><br><span class="line">strings are now utf<span class="number">-8</span> μnicoΔé!</span><br><span class="line">&gt;&gt;&gt;print(<span class="string">'Python has'</span>, type(<span class="string">b' bytes for storing data'</span>))</span><br><span class="line">Python has &lt;<span class="class"><span class="keyword">class</span> '<span class="title">bytes</span>'&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="xrange"><a href="#xrange" class="headerlink" title="xrange"></a>xrange</h3><p>在python2, <code>xrange()</code>主要被用来构建一个可迭代对象, 实现起来跟generator非常像. 但是<code>xrange</code>并不是有限的, 开发者可以无限地迭代下去. 而在python3, <code>xrange()</code>不复存在了, 取而代之的是 <code>range()</code>这个函数. 如果在python3中调用<code>xrange()</code>, 会被抛一个<code>NameError</code>的异常.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">n = <span class="number">10000</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">range_test</span><span class="params">(n)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">for</span> i <span class="keyword">in</span> range(n):</span><br><span class="line">        <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">xrange_test</span><span class="params">(n)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(n):</span><br><span class="line">        <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+<p>对于上面的这个简单的程序, py2和py3各自有着不同的表现.</p>
+<h4 id="Python2-1"><a href="#Python2-1" class="headerlink" title="Python2"></a>Python2</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">print</span> <span class="string">'\ntiming range()'</span></span><br><span class="line">%timeit range_test(n)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">'\ntiming xrange()'</span></span><br><span class="line">%timeit xrange_test(n)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>timing range()</span><br><span class="line"><span class="number">1000</span> loops, best of <span class="number">3</span>: <span class="number">433</span> μs per loop</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>timing xrange()</span><br><span class="line"><span class="number">1000</span> loops, best of <span class="number">3</span>: <span class="number">350</span> μs per loop</span><br></pre></td></tr></table></figure>
+<h4 id="Python3-1"><a href="#Python3-1" class="headerlink" title="Python3"></a>Python3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">print(<span class="string">"\ntiming range()"</span>)</span><br><span class="line">%timeit range_test(n)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>timing range()</span><br><span class="line"><span class="number">1000</span> loops, best of <span class="number">3</span>:<span class="number">520</span> μs per loop.</span><br><span class="line"></span><br><span class="line">print(xrange(<span class="number">10</span>))</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>--------------------------------------------------------------------------</span><br><span class="line">NameError                                 Traceback (most recent call last)</span><br><span class="line"></span><br><span class="line">&lt;ipython-input<span class="number">-5</span><span class="number">-5</span>d8f9b79ea70&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line">----&gt; 1 print(xrange(10))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">NameError: name <span class="string">'xrange'</span> <span class="keyword">is</span> <span class="keyword">not</span> defined</span><br></pre></td></tr></table></figure>
+<p>再有就是, 在python3中, <code>range</code>对象有一个新的字段, 叫<code>__contains__</code>, 对于判断一个元素是否存在于<code>range</code>能加速(前提是int或者boolean).</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">x = <span class="number">10000000</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">val_in_range</span><span class="params">(x, val)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> val <span class="keyword">in</span> range(x)</span><br><span class="line"></span><br><span class="line"><span class="keyword">assert</span>(val_in_range(x, x/<span class="number">2</span>) == <span class="keyword">True</span>)</span><br><span class="line"><span class="keyword">assert</span>(val_in_range(x, x//<span class="number">2</span>) == <span class="keyword">True</span>)</span><br><span class="line"></span><br><span class="line">%timeit val_in_range(x, x/<span class="number">2</span>)</span><br><span class="line">%timeit val_in_range(x, x//<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="number">1</span> loops, best of <span class="number">3</span>: <span class="number">742</span> ms per loop</span><br><span class="line"><span class="number">1000000</span> loops, best of <span class="number">3</span>: <span class="number">1.19</span>μs per loop</span><br></pre></td></tr></table></figure>
+<p>从上面的结果来看, 如果元素是整数而不是float的话, 速度要快非常非常多.</p>
+<h3 id="抛出异常"><a href="#抛出异常" class="headerlink" title="抛出异常"></a>抛出异常</h3><p>python2和python3抛出异常的差异, 仅仅存在于语法层面.</p>
+<h4 id="python2-2"><a href="#python2-2" class="headerlink" title="python2"></a>python2</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">print &apos;Python, python_version()&apos;</span><br><span class="line">raise IOError, &quot;file error&quot;</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; Python 2.7.6</span><br><span class="line">&gt;&gt;&gt; ---------------------------------------------------------------------------</span><br><span class="line">IOError                                   Traceback (most recent call last)</span><br><span class="line"></span><br><span class="line">&lt;ipython-input-8-25f049caebb0&gt; in &lt;module&gt;()</span><br><span class="line">----&gt; 1 raise IOError, &quot;file error&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">IOError: file error</span><br><span class="line"></span><br><span class="line">raise IOError(&quot;file error&quot;)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; ---------------------------------------------------------------------------</span><br><span class="line">IOError                                   Traceback (most recent call last)</span><br><span class="line"></span><br><span class="line">&lt;ipython-input-9-6f1c43f525b2&gt; in &lt;module&gt;()</span><br><span class="line">----&gt; 1 raise IOError(&quot;file error&quot;)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">IOError: file error</span><br></pre></td></tr></table></figure>
+<h4 id="python3-2"><a href="#python3-2" class="headerlink" title="python3"></a>python3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">raise</span> IOError, <span class="string">"file error"</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>File <span class="string">"&lt;ipython-input-10-25f049caebb0&gt;"</span>, line <span class="number">1</span></span><br><span class="line">    <span class="keyword">raise</span> IOError, <span class="string">"file error"</span></span><br><span class="line">                 ^</span><br><span class="line">SyntaxError: invalid syntax</span><br><span class="line"></span><br><span class="line"><span class="keyword">raise</span> IOError(<span class="string">"file error"</span>)</span><br><span class="line"></span><br><span class="line">---------------------------------------------------------------------------</span><br><span class="line">OSError                                   Traceback (most recent call last)</span><br><span class="line"></span><br><span class="line">&lt;ipython-input<span class="number">-11</span>-c350544d15da&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line">      <span class="number">1</span> print(<span class="string">'Python'</span>, python_version())</span><br><span class="line">----&gt; 2 raise IOError("file error")</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">OSError: file error</span><br></pre></td></tr></table></figure>
+<h3 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h3><p>既然py2和py3在抛出异常上有语法上的差别, 那么处理异常方面也同样会有一点点语法上的区别.</p>
+<h4 id="python2-3"><a href="#python2-3" class="headerlink" title="python2"></a>python2</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    let_us_cause_a_NameError</span><br><span class="line"><span class="keyword">except</span> NameError, err:</span><br><span class="line">    <span class="keyword">print</span> err, <span class="string">'--&gt; our error message'</span></span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; name 'let_us_cause_a_NameError' is not defined --&gt; our error message</span><br></pre></td></tr></table></figure>
+<h4 id="python3-3"><a href="#python3-3" class="headerlink" title="python3"></a>python3</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    let_us_cause_a_NameError</span><br><span class="line"><span class="keyword">except</span> NameError <span class="keyword">as</span> err:</span><br><span class="line">    print(err, <span class="string">'--&gt; our error message'</span>)</span><br><span class="line"></span><br><span class="line">&gt;&gt;&gt; name 'let_us_cause_a_NameError' is not defined --&gt; our error message</span><br></pre></td></tr></table></figure>
+<h3 id="next-和-next"><a href="#next-和-next" class="headerlink" title="next() 和 .next()"></a>next() 和 .next()</h3><p>在python3当中, <code>.next()</code>方法已经被取消了, 只剩下<code>next()</code>方法可用. python2 两个方法都继续存在. 如果在python3中调用<code>.nxt()</code>, 系统会抛出异常.</p>
+<h3 id="for循环变量和全局空间泄露"><a href="#for循环变量和全局空间泄露" class="headerlink" title="for循环变量和全局空间泄露"></a>for循环变量和全局空间泄露</h3><p>python3对比python2的一个重大改变要数python3中, for循环的变量并不会被泄露到全局空间里. 官方文档是这么描述的</p>
+<blockquote>
+<blockquote>
+<p>“List comprehensions no longer support the syntactic form [… for var in item1, item2, …]. Use [… for var in (item1, item2, …)] instead. Also note that list comprehensions have different semantics: they are closer to syntactic sugar for a generator expression inside a <code>list()</code> constructor, and in particular the loop control variables are no longer leaked into the surrounding scope.”</p>
+</blockquote>
+</blockquote>
+<h4 id="python2-4"><a href="#python2-4" class="headerlink" title="python2"></a>python2</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">i = <span class="number">1</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">'before: i = '</span>, i</span><br><span class="line"><span class="keyword">print</span> <span class="string">'comprehension: '</span>, [i <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>)]</span><br><span class="line"><span class="keyword">print</span> <span class="string">'after: i = '</span>, i</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>before: i = <span class="number">1</span></span><br><span class="line">comprehension:  [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</span><br><span class="line">after: i = <span class="number">4</span></span><br></pre></td></tr></table></figure>
+<h4 id="pythnon3"><a href="#pythnon3" class="headerlink" title="pythnon3"></a>pythnon3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">i = <span class="number">1</span></span><br><span class="line">print(<span class="string">'before: i ='</span>, i)</span><br><span class="line">print(<span class="string">'comprehension:'</span>, [i <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>)])</span><br><span class="line">print(<span class="string">'after: i ='</span>, i)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>before: i = <span class="number">1</span></span><br><span class="line">comprehension: [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]</span><br><span class="line">after: i = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="比较不可排序类型"><a href="#比较不可排序类型" class="headerlink" title="比较不可排序类型"></a>比较不可排序类型</h3><p>作为python3的重大改进之一, 就是当开发者在试图比较两个不可排序的类型时, 系统会抛出<code>TypeError</code>的异常. 那么什么是不可排序变量呢? 举个例子, 当用<code>list</code>和<code>str()</code>比较, 就是一个不可排序类型的比较.</p>
+<h3 id="处理用户输入"><a href="#处理用户输入" class="headerlink" title="处理用户输入"></a>处理用户输入</h3><p>在python中, 如果要处理用户的输入, 最常使用的方法是<code>input()</code>. 但是很多开发者不知道的是, 在python2当中, <code>input()</code>所返回的类型并不是固定的, 为了避免一些危险的操作出现, 有经验的python2开发会使用<code>raw_input()</code>而不是<code>input()</code>. 但是, 在python3中, <code>input()</code>的返回类型终于被固定了, 在python3的各个版本当中, <code>inpit()</code>返回的是一个<code>str</code>对象.</p>
+<h4 id="python2-5"><a href="#python2-5" class="headerlink" title="python2"></a>python2</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">my_input = input(<span class="string">'enter number: '</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>enter number: <span class="number">123</span></span><br><span class="line"></span><br><span class="line">type(my_input)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>&lt;type <span class="string">'int'</span>&gt;</span><br><span class="line"></span><br><span class="line">my_input = raw_input(<span class="string">'enter number: '</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>enter number: <span class="number">123</span></span><br><span class="line"></span><br><span class="line">type(my_input)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>&lt;type <span class="string">'str'</span>&gt;</span><br></pre></td></tr></table></figure>
+<h4 id="pythnon3-1"><a href="#pythnon3-1" class="headerlink" title="pythnon3"></a>pythnon3</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">my_input = input(<span class="string">'enter number: '</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>enter number: <span class="number">123</span></span><br><span class="line"></span><br><span class="line">type(my_input)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>&lt;type <span class="string">'str'</span>&gt;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/12/20/全村的希望/" rel="next" title="全村的希望">
+                <i class="fa fa-chevron-left"></i> 全村的希望
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+        <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<div class="addthis_inline_share_toolbox">
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5b0096a3c2b16438" async="async"></script>
+</div>
+
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/avatar.jpg" alt="Jiakuan Li">
+            
+              <p class="site-author-name" itemprop="name">Jiakuan Li</p>
+              <p class="site-description motion-element" itemprop="description">雷霆雨露，俱是天恩</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives">
+                
+                    <span class="site-state-item-count">39</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">28</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/jiak94" target="_blank" title="GitHub" rel="external nofollow"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://twitter.com/mem_alloc" target="_blank" title="Twitter" rel="external nofollow"><i class="fa fa-fw fa-twitter"></i>Twitter</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Python2-和-Python3"><span class="nav-number">1.</span> <span class="nav-text">Python2 和 Python3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“future”-模块"><span class="nav-number">2.</span> <span class="nav-text">“future” 模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#“print”-语法糖"><span class="nav-number">3.</span> <span class="nav-text">“print” 语法糖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#python2"><span class="nav-number">3.1.</span> <span class="nav-text">python2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#python3"><span class="nav-number">3.2.</span> <span class="nav-text">python3</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#整数除法"><span class="nav-number">3.3.</span> <span class="nav-text">整数除法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#python2-1"><span class="nav-number">3.3.1.</span> <span class="nav-text">python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#python3-1"><span class="nav-number">3.3.2.</span> <span class="nav-text">python3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Unicode"><span class="nav-number">3.4.</span> <span class="nav-text">Unicode</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Python2"><span class="nav-number">3.4.1.</span> <span class="nav-text">Python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python3"><span class="nav-number">3.4.2.</span> <span class="nav-text">Python3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#xrange"><span class="nav-number">3.5.</span> <span class="nav-text">xrange</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Python2-1"><span class="nav-number">3.5.1.</span> <span class="nav-text">Python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Python3-1"><span class="nav-number">3.5.2.</span> <span class="nav-text">Python3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抛出异常"><span class="nav-number">3.6.</span> <span class="nav-text">抛出异常</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#python2-2"><span class="nav-number">3.6.1.</span> <span class="nav-text">python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#python3-2"><span class="nav-number">3.6.2.</span> <span class="nav-text">python3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异常处理"><span class="nav-number">3.7.</span> <span class="nav-text">异常处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#python2-3"><span class="nav-number">3.7.1.</span> <span class="nav-text">python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#python3-3"><span class="nav-number">3.7.2.</span> <span class="nav-text">python3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#next-和-next"><span class="nav-number">3.8.</span> <span class="nav-text">next() 和 .next()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#for循环变量和全局空间泄露"><span class="nav-number">3.9.</span> <span class="nav-text">for循环变量和全局空间泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#python2-4"><span class="nav-number">3.9.1.</span> <span class="nav-text">python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pythnon3"><span class="nav-number">3.9.2.</span> <span class="nav-text">pythnon3</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比较不可排序类型"><span class="nav-number">3.10.</span> <span class="nav-text">比较不可排序类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#处理用户输入"><span class="nav-number">3.11.</span> <span class="nav-text">处理用户输入</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#python2-5"><span class="nav-number">3.11.1.</span> <span class="nav-text">python2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#pythnon3-1"><span class="nav-number">3.11.2.</span> <span class="nav-text">pythnon3</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jiakuan Li</span>
+
+  
+
+  
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv" title="Total Visitors">
+      <i class="fa fa-user"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="site-pv" title="Total Views">
+      <i class="fa fa-eye"></i>
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+  
+    <script id="dsq-count-scr" src="https://memory-allocation.disqus.com/count.js" async></script>
+  
+
+  
+    <script type="text/javascript">
+      var disqus_config = function () {
+        this.page.url = 'https://jiakuan.xyz/2019/01/28/Python2-vs-Python3/';
+        this.page.identifier = '2019/01/28/Python2-vs-Python3/';
+        this.page.title = 'Python2 vs Python3';
+        };
+      function loadComments () {
+        var d = document, s = d.createElement('script');
+        s.src = 'https://memory-allocation.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', '' + +new Date());
+        (d.head || d.body).appendChild(s);
+      }
+      
+        loadComments();
+      
+    </script>
+  
+
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('Copy').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('Copy')
+        }, 300)
+      }).append(e)
+    })
+  </script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config("");
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+
+
+</body>
+</html>
